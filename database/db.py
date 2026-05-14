@@ -40,3 +40,14 @@ async def close_db():
     await pool.wait_closed()
     pool = None
     log.info("DB pool closed")
+
+async def execute(query, params=None):
+    if pool is None:
+        raise RuntimeError("DB pool not initialized")
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            await cur.execute(query, params)
+            try:
+                return cur.lastrowid
+            except Exception:
+                return cur.rowcount
