@@ -4,10 +4,6 @@ Discord-based ChatOps system for managing and monitoring FreeRADIUS users using 
 
 ## Overview
 
-This project is designed as a Final Project / Thesis implementation with the title:
-
-> "Rancang Bangun ChatOps sebagai Media Manajemen dan Monitoring User pada RADIUS Server Berbasis Discord Bot"
-
 The system integrates:
 
 - FreeRADIUS
