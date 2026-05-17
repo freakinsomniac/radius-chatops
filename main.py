@@ -3,6 +3,8 @@ import disnake
 from disnake.ext import commands
 from dotenv import load_dotenv
 from database.db import init_db, close_db, fetch, execute
+from utils.embeds import success_embed, error_embed, info_embed, warning_embed
+from utils.autocomplete import username_autocomplete, groupname_autocomplete, attribute_autocomplete, operator_autocomplete
 
 load_dotenv()
 
@@ -27,7 +29,7 @@ async def on_ready():
     description="Test ping bot"
 )
 async def ping(inter):
-    await inter.response.send_message("Pong!")
+    await inter.response.send_message("Pong! 🏓")
 
 GUILD_ID = os.getenv("GUILD_ID")
 g_id = int(GUILD_ID) if GUILD_ID else None
@@ -44,32 +46,45 @@ if g_id:
         try:
             rows = await fetch(query)
         except Exception as e:
-            await inter.followup.send(f"Error saat mengambil data: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil data: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("Tidak ada user.")
+            embed = warning_embed("⚠️ Tidak Ada Data", "Tidak ada user di database.")
+            await inter.followup.send(embed=embed)
             return
 
-        result = "\n".join(f"- {r['username']}" for r in rows)
-        await inter.followup.send(f"📡 Daftar User Radius:\n\n{result}")
+        users_list = [r['username'] for r in rows]
+        chunk_size = 50
+        chunks = [users_list[i:i + chunk_size] for i in range(0, len(users_list), chunk_size)]
+        
+        for idx, chunk in enumerate(chunks):
+            result = "\n".join(f"• {u}" for u in chunk)
+            embed = info_embed(
+                f"📡 Daftar User Radius (Halaman {idx + 1}/{len(chunks)})",
+                f"Total: {len(users_list)} user\n\n{result}"
+            )
+            await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="adduser",
-        description="Tambah user radius",
+        description="Tambah user radius baru",
         default_guild_ids=[g_id]
     )
-    async def adduser(inter, username: str, password: str, group: str = None):
+    async def adduser(inter, username: str, password: str, group: str = commands.Param(default=None, autocomplete=groupname_autocomplete)):
         await inter.response.defer()
         username = username.strip()
         try:
             exists = await fetch("SELECT 1 FROM radcheck WHERE username=%s LIMIT 1", (username,))
         except Exception as e:
-            await inter.followup.send(f"Error saat mengecek user: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengecek user: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if exists:
-            await inter.followup.send("User sudah ada.")
+            embed = warning_embed("⚠️ User Sudah Ada", f"User `{username}` sudah terdaftar di database.")
+            await inter.followup.send(embed=embed)
             return
 
         try:
@@ -78,17 +93,16 @@ if g_id:
                 (username, "Cleartext-Password", ":=", password)
             )
         except Exception as e:
-            await inter.followup.send(f"Gagal menambah user: {e}")
+            embed = error_embed("❌ Gagal Menambah User", f"Error: {e}")
+            await inter.followup.send(embed=embed)
             return
 
-        # insert minimal profile data so daloRADIUS UI shows the new user
         try:
             await execute(
                 "INSERT INTO userinfo (username, creationdate, creationby, enableportallogin) VALUES (%s, NOW(), %s, %s)",
                 (username, "discord-bot", 0)
             )
         except Exception:
-            # non-fatal: user was created in radcheck but profile insert failed
             pass
 
         if group:
@@ -97,53 +111,64 @@ if g_id:
                     "INSERT INTO radusergroup (username, groupname) VALUES (%s, %s)",
                     (username, group)
                 )
+                fields = [("Username", f"`{username}`", True), ("Group", f"`{group}`", True)]
             except Exception as e:
-                await inter.followup.send(f"User dibuat, tetapi gagal menambahkan group: {e}")
+                embed = warning_embed("⚠️ User Dibuat, Group Gagal", f"User berhasil dibuat tapi gagal menambah group: {e}")
+                await inter.followup.send(embed=embed)
                 return
+        else:
+            fields = [("Username", f"`{username}`", True)]
 
-        await inter.followup.send(f"User {username} berhasil ditambahkan.")
+        embed = success_embed("✅ User Berhasil Ditambahkan", fields=fields)
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="deluser",
         description="Hapus user radius",
         default_guild_ids=[g_id]
     )
-    async def deluser(inter, username: str):
+    async def deluser(inter, username: str = commands.Param(autocomplete=username_autocomplete)):
         await inter.response.defer()
         try:
             exists = await fetch("SELECT 1 FROM radcheck WHERE username=%s LIMIT 1", (username,))
         except Exception as e:
-            await inter.followup.send(f"Error saat mengecek user: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengecek user: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not exists:
-            await inter.followup.send("User tidak ditemukan.")
+            embed = error_embed("❌ User Tidak Ditemukan", f"User `{username}` tidak ada di database.")
+            await inter.followup.send(embed=embed)
             return
 
         try:
             await execute("DELETE FROM radcheck WHERE username=%s", (username,))
             await execute("DELETE FROM radusergroup WHERE username=%s", (username,))
         except Exception as e:
-            await inter.followup.send(f"Gagal menghapus user: {e}")
+            embed = error_embed("❌ Gagal Menghapus User", f"Error: {e}")
+            await inter.followup.send(embed=embed)
             return
 
-        await inter.followup.send(f"User {username} berhasil dihapus.")
+        embed = success_embed("✅ User Berhasil Dihapus", f"User `{username}` telah dihapus dari database.")
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="changepass",
         description="Ubah password user radius",
         default_guild_ids=[g_id]
     )
-    async def changepass(inter, username: str, new_password: str):
+    async def changepass(inter, username: str = commands.Param(autocomplete=username_autocomplete), new_password: str = None):
         await inter.response.defer()
         try:
             rows = await fetch("SELECT id FROM radcheck WHERE username=%s AND attribute=%s", (username, "Cleartext-Password"))
         except Exception as e:
-            await inter.followup.send(f"Error saat mengecek user: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengecek user: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("User atau attribute password tidak ditemukan.")
+            embed = error_embed("❌ User Tidak Ditemukan", f"User `{username}` atau attribute password tidak ditemukan.")
+            await inter.followup.send(embed=embed)
             return
 
         try:
@@ -152,10 +177,12 @@ if g_id:
                 (new_password, username, "Cleartext-Password")
             )
         except Exception as e:
-            await inter.followup.send(f"Gagal mengubah password: {e}")
+            embed = error_embed("❌ Gagal Mengubah Password", f"Error: {e}")
+            await inter.followup.send(embed=embed)
             return
 
-        await inter.followup.send(f"Password untuk {username} berhasil diubah.")
+        embed = success_embed("✅ Password Berhasil Diubah", f"Password untuk user `{username}` telah diperbarui.")
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="online",
@@ -168,58 +195,79 @@ if g_id:
             query = "SELECT username, nasipaddress, framedipaddress, acctstarttime FROM radacct WHERE acctstoptime IS NULL ORDER BY username LIMIT 50;"
             rows = await fetch(query)
         except Exception as e:
-            await inter.followup.send(f"Error saat mengambil data online: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil data online: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("Tidak ada user online saat ini.")
+            embed = warning_embed("⚠️ Tidak Ada User Online", "Saat ini tidak ada user yang sedang aktif.")
+            await inter.followup.send(embed=embed)
             return
 
-        result = "\n".join(f"- {r['username']} @ {r.get('nasipaddress') or '-'} ({r.get('framedipaddress') or '-'}) since {r.get('acctstarttime')}" for r in rows)
-        await inter.followup.send(f"Online users (max 50):\n{result}")
+        result = "\n".join(f"• {r['username']} @ {r.get('nasipaddress') or '-'} ({r.get('framedipaddress') or '-'})" for r in rows)
+        embed = info_embed(
+            f"🟢 User Online ({len(rows)})",
+            result
+        )
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="userstats",
         description="Show basic session stats for a user (radacct)",
         default_guild_ids=[g_id]
     )
-    async def userstats(inter, username: str):
+    async def userstats(inter, username: str = commands.Param(autocomplete=username_autocomplete)):
         await inter.response.defer()
         username = username.strip()
         try:
             query = "SELECT COUNT(*) AS sessions, COALESCE(SUM(acctinputoctets),0) AS in_bytes, COALESCE(SUM(acctoutputoctets),0) AS out_bytes, MAX(acctstarttime) AS last_login FROM radacct WHERE username=%s"
             rows = await fetch(query, (username,))
         except Exception as e:
-            await inter.followup.send(f"Error saat mengambil stats: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil stats: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("Tidak ditemukan data untuk user tersebut.")
+            embed = error_embed("❌ Data Tidak Ditemukan", f"Tidak ada data untuk user `{username}`.")
+            await inter.followup.send(embed=embed)
             return
 
         r = rows[0]
-        await inter.followup.send(f"Stats {username}: sessions={r['sessions']}, in={r['in_bytes']} bytes, out={r['out_bytes']} bytes, last_login={r['last_login']}")
+        in_mb = r['in_bytes'] / (1024 * 1024)
+        out_mb = r['out_bytes'] / (1024 * 1024)
+        
+        fields = [
+            ("Sessions", str(r['sessions']), True),
+            ("Download", f"{in_mb:.2f} MB", True),
+            ("Upload", f"{out_mb:.2f} MB", True),
+            ("Last Login", str(r['last_login']), False)
+        ]
+        embed = info_embed(f"📊 Stats User: {username}", fields=fields)
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="lastlogin",
         description="Show last login time for a user (radacct)",
         default_guild_ids=[g_id]
     )
-    async def lastlogin(inter, username: str):
+    async def lastlogin(inter, username: str = commands.Param(autocomplete=username_autocomplete)):
         await inter.response.defer()
         username = username.strip()
         try:
             query = "SELECT acctstarttime FROM radacct WHERE username=%s ORDER BY acctstarttime DESC LIMIT 1"
             rows = await fetch(query, (username,))
         except Exception as e:
-            await inter.followup.send(f"Error saat mengambil last login: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil last login: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("Tidak ditemukan last login untuk user tersebut.")
+            embed = warning_embed("⚠️ Data Tidak Ditemukan", f"Tidak ada riwayat login untuk user `{username}`.")
+            await inter.followup.send(embed=embed)
             return
 
-        await inter.followup.send(f"Last login {username}: {rows[0]['acctstarttime']}")
+        embed = info_embed(f"🕐 Last Login: {username}", str(rows[0]['acctstarttime']))
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="activecount",
@@ -232,10 +280,13 @@ if g_id:
             query = "SELECT COUNT(*) AS active FROM radacct WHERE acctstoptime IS NULL"
             rows = await fetch(query)
         except Exception as e:
-            await inter.followup.send(f"Error saat menghitung active sessions: {e}")
+            embed = error_embed("❌ Error", f"Gagal menghitung active sessions: {e}")
+            await inter.followup.send(embed=embed)
             return
 
-        await inter.followup.send(f"Active sessions: {rows[0]['active']}")
+        count = rows[0]['active']
+        embed = info_embed(f"🟢 Active Sessions: {count}")
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="naslist",
@@ -249,15 +300,18 @@ if g_id:
             query = f"SELECT id, nasname, shortname, description FROM nas ORDER BY id LIMIT {limit};"
             rows = await fetch(query)
         except Exception as e:
-            await inter.followup.send(f"Error saat mengambil daftar NAS: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil daftar NAS: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("Tidak ada NAS terdaftar.")
+            embed = warning_embed("⚠️ Tidak Ada NAS", "Tidak ada NAS terdaftar di database.")
+            await inter.followup.send(embed=embed)
             return
 
-        result = "\n".join(f"- {r['id']}: {r.get('nasname') or '-'} ({r.get('shortname') or '-'}) - {r.get('description') or ''}" for r in rows)
-        await inter.followup.send(f"NAS list (max {limit}):\n{result}")
+        result = "\n".join(f"• **{r['id']}** - {r.get('nasname') or '-'} ({r.get('shortname') or '-'})" for r in rows)
+        embed = info_embed(f"🖥️ NAS List (Limit: {limit})", result)
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="nasstatus",
@@ -272,15 +326,18 @@ if g_id:
             else:
                 rows = await fetch("SELECT nasipaddress, COUNT(*) AS active FROM radacct WHERE acctstoptime IS NULL GROUP BY nasipaddress")
         except Exception as e:
-            await inter.followup.send(f"Error saat mengambil status NAS: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil status NAS: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("Tidak ada session aktif atau NAS tidak ditemukan.")
+            embed = warning_embed("⚠️ Tidak Ada Session", "Tidak ada session aktif atau NAS tidak ditemukan.")
+            await inter.followup.send(embed=embed)
             return
 
-        result = "\n".join(f"- {r.get('nasipaddress') or '-'}: {r.get('active')} active" for r in rows)
-        await inter.followup.send(f"NAS status:\n{result}")
+        result = "\n".join(f"• {r.get('nasipaddress') or '-'}: **{r.get('active')}** active" for r in rows)
+        embed = info_embed("🖥️ NAS Status", result)
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="nasusers",
@@ -294,22 +351,25 @@ if g_id:
             query = f"SELECT username, framedipaddress, acctstarttime FROM radacct WHERE nasipaddress=%s AND acctstoptime IS NULL ORDER BY acctstarttime DESC LIMIT {limit}"
             rows = await fetch(query, (nasip,))
         except Exception as e:
-            await inter.followup.send(f"Error saat mengambil user NAS: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil user NAS: {e}")
+            await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            await inter.followup.send("Tidak ada user aktif di NAS ini.")
+            embed = warning_embed("⚠️ Tidak Ada User", f"Tidak ada user aktif di NAS `{nasip}`.")
+            await inter.followup.send(embed=embed)
             return
 
-        result = "\n".join(f"- {r['username']} ({r.get('framedipaddress') or '-'}) since {r.get('acctstarttime')}" for r in rows)
-        await inter.followup.send(f"Users on {nasip} (max {limit}):\n{result}")
+        result = "\n".join(f"• {r['username']} ({r.get('framedipaddress') or '-'})" for r in rows)
+        embed = info_embed(f"👥 Users on {nasip} (Max {limit})", result)
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="setprofile",
         description="Assign a single profile/group to a user (radusergroup)",
         default_guild_ids=[g_id]
     )
-    async def setprofile(inter, username: str, groupname: str):
+    async def setprofile(inter, username: str = commands.Param(autocomplete=username_autocomplete), groupname: str = commands.Param(autocomplete=groupname_autocomplete)):
         await inter.response.defer()
         username = username.strip()
         groupname = groupname.strip()
@@ -317,17 +377,20 @@ if g_id:
             await execute("DELETE FROM radusergroup WHERE username=%s", (username,))
             await execute("INSERT INTO radusergroup (username, groupname) VALUES (%s, %s)", (username, groupname))
         except Exception as e:
-            await inter.followup.send(f"Error saat set profile: {e}")
+            embed = error_embed("❌ Error", f"Gagal set profile: {e}")
+            await inter.followup.send(embed=embed)
             return
 
-        await inter.followup.send(f"User {username} sekarang di profile {groupname}.")
+        fields = [("Username", f"`{username}`", True), ("Profile", f"`{groupname}`", True)]
+        embed = success_embed("✅ Profile Berhasil Diubah", fields=fields)
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="groupadd",
         description="Add a reply attribute to a group (radgroupreply)",
         default_guild_ids=[g_id]
     )
-    async def groupadd(inter, groupname: str, attribute: str, op: str, value: str):
+    async def groupadd(inter, groupname: str = commands.Param(autocomplete=groupname_autocomplete), attribute: str = commands.Param(autocomplete=attribute_autocomplete), op: str = commands.Param(autocomplete=operator_autocomplete), value: str = None):
         await inter.response.defer()
         groupname = groupname.strip()
         attribute = attribute.strip()
@@ -335,28 +398,35 @@ if g_id:
         try:
             await execute("INSERT INTO radgroupreply (groupname, attribute, op, value) VALUES (%s, %s, %s, %s)", (groupname, attribute, op, value))
         except Exception as e:
-            await inter.followup.send(f"Gagal menambahkan group reply: {e}")
+            embed = error_embed("❌ Gagal Menambah Group Reply", f"Error: {e}")
+            await inter.followup.send(embed=embed)
             return
 
-        await inter.followup.send(f"Group reply ditambahkan ke {groupname}: {attribute} {op} {value}")
+        fields = [("Group", f"`{groupname}`", True), ("Attribute", f"`{attribute}`", True), ("Operator", f"`{op}`", True), ("Value", f"`{value}`", True)]
+        embed = success_embed("✅ Group Reply Berhasil Ditambahkan", fields=fields)
+        await inter.followup.send(embed=embed)
 
     @bot.slash_command(
         name="groupremove",
         description="Remove reply attributes from a group or remove entire group replies",
         default_guild_ids=[g_id]
     )
-    async def groupremove(inter, groupname: str, attribute: str = None):
+    async def groupremove(inter, groupname: str = commands.Param(autocomplete=groupname_autocomplete), attribute: str = commands.Param(default=None, autocomplete=attribute_autocomplete)):
         await inter.response.defer()
         groupname = groupname.strip()
         try:
             if attribute:
                 await execute("DELETE FROM radgroupreply WHERE groupname=%s AND attribute=%s", (groupname, attribute))
-                await inter.followup.send(f"Removed attribute {attribute} from group {groupname}.")
+                embed = success_embed("✅ Attribute Berhasil Dihapus", f"Attribute `{attribute}` dihapus dari group `{groupname}`.")
             else:
                 await execute("DELETE FROM radgroupreply WHERE groupname=%s", (groupname,))
-                await inter.followup.send(f"Removed all replies for group {groupname}.")
+                embed = success_embed("✅ Group Reply Berhasil Dihapus", f"Semua reply untuk group `{groupname}` telah dihapus.")
         except Exception as e:
-            await inter.followup.send(f"Gagal menghapus group reply: {e}")
+            embed = error_embed("❌ Gagal Menghapus Group Reply", f"Error: {e}")
+            await inter.followup.send(embed=embed)
             return
 
+        await inter.followup.send(embed=embed)
+
 bot.run(os.getenv("DISCORD_TOKEN"))
+
