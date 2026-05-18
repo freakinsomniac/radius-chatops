@@ -1,18 +1,32 @@
 from disnake.ext import commands
 import disnake
-import os
-from database.db import fetch, execute
-from utils.embeds import success_embed, error_embed, info_embed, warning_embed
-from utils.autocomplete import username_autocomplete, groupname_autocomplete, attribute_autocomplete, operator_autocomplete
-
-GUILD_ID = os.getenv("GUILD_ID")
-GUILD_IDS = [int(GUILD_ID)] if GUILD_ID else []
+from database.db import fetch
 
 
-class Users(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+async def username_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
+    try:
+        rows = await fetch("SELECT DISTINCT username FROM radcheck WHERE username LIKE %s ORDER BY username LIMIT 25", (f"{user_input}%",))
+        return [r['username'] for r in rows] if rows else []
+    except Exception:
+        return []
 
 
-def setup(bot):
-    bot.add_cog(Users(bot))
+async def groupname_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
+    try:
+        rows = await fetch("SELECT DISTINCT groupname FROM radusergroup WHERE groupname LIKE %s ORDER BY groupname LIMIT 25", (f"{user_input}%",))
+        return [r['groupname'] for r in rows] if rows else []
+    except Exception:
+        return []
+
+
+async def attribute_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
+    try:
+        rows = await fetch("SELECT DISTINCT attribute FROM radgroupreply WHERE attribute LIKE %s ORDER BY attribute LIMIT 25", (f"{user_input}%",))
+        return [r['attribute'] for r in rows] if rows else []
+    except Exception:
+        return []
+
+
+async def operator_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
+    operators = [":=", "=", "!=", ">", ">=", "<", "<=", "=~", "!~", "=="]
+    return [op for op in operators if op.startswith(user_input)]
