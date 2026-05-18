@@ -30,3 +30,18 @@ async def attribute_autocomplete(inter: disnake.ApplicationCommandInteraction, u
 async def operator_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
     operators = [":=", "=", "!=", ">", ">=", "<", "<=", "=~", "!~", "=="]
     return [op for op in operators if op.startswith(user_input)]
+
+
+async def nas_ip_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
+    """Autocomplete untuk NAS IP Address dengan nama NAS"""
+    try:
+        rows = await fetch(
+            "SELECT nasipaddress, shortname, nasname FROM nas WHERE nasipaddress LIKE %s OR shortname LIKE %s OR nasname LIKE %s ORDER BY nasipaddress LIMIT 25",
+            (f"{user_input}%", f"{user_input}%", f"{user_input}%")
+        )
+        if rows:
+            # Format: "IP - ShortName (NasName)"
+            return [f"{r['nasipaddress']} - {r.get('shortname', 'N/A')} ({r.get('nasname', 'N/A')})" for r in rows]
+        return []
+    except Exception:
+        return []

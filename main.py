@@ -4,7 +4,7 @@ from disnake.ext import commands
 from dotenv import load_dotenv
 from database.db import init_db, close_db, fetch, execute
 from utils.embeds import success_embed, error_embed, info_embed, warning_embed
-from utils.autocomplete import username_autocomplete, groupname_autocomplete, attribute_autocomplete, operator_autocomplete
+from utils.autocomplete import username_autocomplete, groupname_autocomplete, attribute_autocomplete, operator_autocomplete, nas_ip_autocomplete
 
 load_dotenv()
 
@@ -428,5 +428,178 @@ if g_id:
 
         await inter.followup.send(embed=embed)
 
-bot.run(os.getenv("DISCORD_TOKEN"))
+    @bot.slash_command(
+        name="checkattributes",
+        description="Lihat semua attributes dari seorang user",
+        default_guild_ids=[g_id]
+    )
+    async def checkattributes(inter, username: str = commands.Param(autocomplete=username_autocomplete)):
+        await inter.response.defer()
+        username = username.strip()
+        
+        try:
+            rows = await fetch(
+                "SELECT attribute, op, value FROM radcheck WHERE username=%s ORDER BY attribute",
+                (username,)
+            )
+        except Exception as e:
+            embed = error_embed("❌ Error", f"Gagal mengambil attributes: {e}")
+            await inter.followup.send(embed=embed)
+            return
 
+        if not rows:
+            embed = warning_embed("⚠️ Tidak Ada Attributes", f"User `{username}` tidak memiliki attributes.")
+            await inter.followup.send(embed=embed)
+            return
+
+        result = "\n".join(f"• **{r['attribute']}** `{r['op']}` `{r['value']}`" for r in rows)
+        embed = info_embed(f"📋 Check Attributes: {username}", result)
+        await inter.followup.send(embed=embed)
+
+    @bot.slash_command(
+        name="addnasip",
+        description="Tambah NAS IP Address restriction untuk user",
+        default_guild_ids=[g_id]
+    )
+    async def addnasip(
+        inter,
+        username: str = commands.Param(autocomplete=username_autocomplete),
+        nas_ip: str = commands.Param(name="nas_ip", autocomplete=nas_ip_autocomplete, description="Format: IP - ShortName (NasName)")
+    ):
+        await inter.response.defer()
+        username = username.strip()
+        
+        ip_address = nas_ip.split(" - ")[0].strip() if " - " in nas_ip else nas_ip.strip()
+        
+        parts = ip_address.split(".")
+        if len(parts) != 4:
+            embed = error_embed("❌ Format IP Tidak Valid", f"IP `{ip_address}` tidak valid. Gunakan format: 192.168.1.1")
+            await inter.followup.send(embed=embed)
+            return
+        
+        try:
+            for part in parts:
+                num = int(part)
+                if num < 0 or num > 255:
+                    raise ValueError()
+        except (ValueError, TypeError):
+            embed = error_embed("❌ Format IP Tidak Valid", f"IP `{ip_address}` tidak valid. Gunakan format: 192.168.1.1")
+            await inter.followup.send(embed=embed)
+            return
+
+        try:
+            user_exists = await fetch("SELECT 1 FROM radcheck WHERE username=%s LIMIT 1", (username,))
+            if not user_exists:
+                embed = error_embed("❌ User Tidak Ditemukan", f"User `{username}` tidak ada di database.")
+                await inter.followup.send(embed=embed)
+                return
+
+            existing = await fetch(
+                "SELECT 1 FROM radcheck WHERE username=%s AND attribute=%s AND value=%s LIMIT 1",
+                (username, "NAS-IP-Address", ip_address)
+            )
+            if existing:
+                embed = warning_embed("⚠️ Sudah Ada", f"User `{username}` sudah memiliki akses ke NAS `{ip_address}`.")
+                await inter.followup.send(embed=embed)
+                return
+
+            await execute(
+                "INSERT INTO radcheck (username, attribute, op, value) VALUES (%s, %s, %s, %s)",
+                (username, "NAS-IP-Address", "==", ip_address)
+            )
+        except Exception as e:
+            embed = error_embed("❌ Gagal Menambah NAS IP", f"Error: {e}")
+            await inter.followup.send(embed=embed)
+            return
+
+        fields = [
+            ("Username", f"`{username}`", True),
+            ("NAS IP", f"`{ip_address}`", True),
+            ("Operator", "`==`", True)
+        ]
+        embed = success_embed("✅ NAS IP Berhasil Ditambahkan", fields=fields)
+        await inter.followup.send(embed=embed)
+
+    @bot.slash_command(
+        name="removenasip",
+        description="Hapus NAS IP Address restriction dari user",
+        default_guild_ids=[g_id]
+    )
+    async def removenasip(
+        inter,
+        username: str = commands.Param(autocomplete=username_autocomplete),
+        nas_ip: str = commands.Param(name="nas_ip", description="IP Address yang ingin dihapus")
+    ):
+        await inter.response.defer()
+        username = username.strip()
+        nas_ip = nas_ip.strip()
+
+        ip_address = nas_ip.split(" - ")[0].strip() if " - " in nas_ip else nas_ip.strip()
+
+        try:
+            existing = await fetch(
+                "SELECT 1 FROM radcheck WHERE username=%s AND attribute=%s AND value=%s LIMIT 1",
+                (username, "NAS-IP-Address", ip_address)
+            )
+            if not existing:
+                embed = error_embed("❌ Tidak Ditemukan", f"User `{username}` tidak memiliki akses ke NAS `{ip_address}`.")
+                await inter.followup.send(embed=embed)
+                return
+
+            await execute(
+                "DELETE FROM radcheck WHERE username=%s AND attribute=%s AND value=%s",
+                (username, "NAS-IP-Address", ip_address)
+            )
+        except Exception as e:
+            embed = error_embed("❌ Gagal Menghapus NAS IP", f"Error: {e}")
+            await inter.followup.send(embed=embed)
+            return
+
+        embed = success_embed("✅ NAS IP Berhasil Dihapus", f"User `{username}` tidak lagi memiliki akses ke NAS `{ip_address}`.")
+        await inter.followup.send(embed=embed)
+
+    @bot.slash_command(
+        name="listnasip",
+        description="Lihat semua NAS IP yang bisa diakses user",
+        default_guild_ids=[g_id]
+    )
+    async def listnasip(inter, username: str = commands.Param(autocomplete=username_autocomplete)):
+        await inter.response.defer()
+        username = username.strip()
+
+        try:
+            rows = await fetch(
+                "SELECT value FROM radcheck WHERE username=%s AND attribute=%s ORDER BY value",
+                (username, "NAS-IP-Address")
+            )
+        except Exception as e:
+            embed = error_embed("❌ Error", f"Gagal mengambil NAS IP: {e}")
+            await inter.followup.send(embed=embed)
+            return
+
+        if not rows:
+            embed = warning_embed("⚠️ Tidak Ada Restriction", f"User `{username}` tidak memiliki NAS IP restriction (akses ke semua NAS).")
+            await inter.followup.send(embed=embed)
+            return
+
+        nas_info = {}
+        try:
+            nas_rows = await fetch("SELECT nasipaddress, shortname, nasname FROM nas")
+            nas_info = {r['nasipaddress']: r for r in nas_rows}
+        except Exception:
+            pass
+
+        result_lines = []
+        for r in rows:
+            ip = r['value']
+            if ip in nas_info:
+                info = nas_info[ip]
+                result_lines.append(f"• `{ip}` - **{info.get('shortname', 'N/A')}** ({info.get('nasname', 'N/A')})")
+            else:
+                result_lines.append(f"• `{ip}`")
+
+        result = "\n".join(result_lines)
+        embed = info_embed(f"🖥️ NAS IP Access: {username}", result)
+        await inter.followup.send(embed=embed)
+
+bot.run(os.getenv("DISCORD_TOKEN"))
