@@ -33,15 +33,44 @@ async def operator_autocomplete(inter: disnake.ApplicationCommandInteraction, us
 
 
 async def nas_ip_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
-    """Autocomplete untuk NAS IP Address dengan nama NAS"""
     try:
-        rows = await fetch(
-            "SELECT nasipaddress, shortname, nasname FROM nas WHERE nasipaddress LIKE %s OR shortname LIKE %s OR nasname LIKE %s ORDER BY nasipaddress LIMIT 25",
-            (f"{user_input}%", f"{user_input}%", f"{user_input}%")
-        )
-        if rows:
-            # Format: "IP - ShortName (NasName)"
-            return [f"{r['nasipaddress']} - {r.get('shortname', 'N/A')} ({r.get('nasname', 'N/A')})" for r in rows]
-        return []
-    except Exception:
+        if not user_input or user_input.strip() == "":
+            rows = await fetch(
+                "SELECT DISTINCT nasipaddress FROM radacct WHERE nasipaddress IS NOT NULL ORDER BY nasipaddress LIMIT 25"
+            )
+        else:
+            search_term = f"%{user_input}%"
+            rows = await fetch(
+                "SELECT DISTINCT nasipaddress FROM radacct WHERE nasipaddress IS NOT NULL AND nasipaddress LIKE %s ORDER BY nasipaddress LIMIT 25",
+                (search_term,)
+            )
+        
+        if not rows:
+            return []
+        
+        result = []
+        
+        nas_map = {}
+        try:
+            nas_rows = await fetch("SELECT nasname, shortname FROM nas WHERE nasname IS NOT NULL")
+            for nas_row in nas_rows:
+                nasname = nas_row.get('nasname', '')
+                shortname = nas_row.get('shortname', '')
+                if nasname and (nasname.count('.') == 3 or '.' in nasname):
+                    nas_map[nasname] = shortname or nasname
+        except Exception as e:
+            print(f"Error fetching NAS records: {e}")
+        
+        for r in rows:
+            ip = r['nasipaddress']
+            nas_name = nas_map.get(ip)
+            
+            if nas_name:
+                result.append(f"{ip} - {nas_name}")
+            else:
+                result.append(ip)
+        
+        return result
+    except Exception as e:
+        print(f"Error in nas_ip_autocomplete: {e}")
         return []
