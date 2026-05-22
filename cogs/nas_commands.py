@@ -1,12 +1,22 @@
+import os
 import logging
 import disnake
 from disnake.ext import commands
 from database.db import fetch, execute
 from utils.embeds import success_embed, error_embed, info_embed, warning_embed
-from utils.autocomplete import username_autocomplete, nas_ip_autocomplete
+from utils.autocomplete import username_autocomplete, nas_ip_autocomplete, nasname_autocomplete
 from utils.exceptions import UserNotFound, DatabaseError
 
 logger = logging.getLogger(__name__)
+
+GUILD_ID = os.getenv("GUILD_ID")
+GUILD_IDS = [int(GUILD_ID)] if GUILD_ID else None
+
+NAS_TYPE_CHOICES = {
+    "other": "other",
+    "mikrotik": "mikrotik",
+    "cisco": "cisco",
+}
 
 
 class NasCommands(commands.Cog):
@@ -264,6 +274,202 @@ class NasCommands(commands.Cog):
 
         result = "\n".join(result_lines)
         embed = info_embed(f"🖥️ NAS IP Access: {username}", result)
+        await inter.followup.send(embed=embed)
+
+
+    @commands.slash_command(
+        name="addnas",
+        description="Tambah NAS device baru ke database"
+    )
+    async def addnas(
+        self,
+        inter,
+        nasname: str = commands.Param(name="nas_ip_host", description="NAS IP/Host"),
+        secret: str = commands.Param(name="nas_secret", description="NAS Secret"),
+        type: str = commands.Param(name="nas_type", choices=NAS_TYPE_CHOICES, description="NAS Type"),
+        shortname: str = commands.Param(name="nas_shortname", description="NAS Shortname")
+    ):
+        await inter.response.defer()
+        nasname = nasname.strip()
+        shortname = shortname.strip()
+
+        try:
+            existing = await fetch("SELECT 1 FROM nas WHERE nasname=%s LIMIT 1", (nasname,))
+            if existing:
+                embed = warning_embed("⚠️ NAS Sudah Ada", f"NAS dengan nasname `{nasname}` sudah terdaftar.")
+                await inter.followup.send(embed=embed)
+                return
+
+            await execute(
+                "INSERT INTO nas (nasname, shortname, type, ports, secret, description) VALUES (%s, %s, %s, %s, %s, %s)",
+                (nasname, shortname, type, 0, secret, "")
+            )
+            logger.info(f"NAS '{nasname}' ({shortname}) berhasil ditambahkan")
+        except Exception as e:
+            logger.exception(f"Gagal menambah NAS: {e}")
+            embed = error_embed("❌ Gagal Menambah NAS", f"Error: {e}")
+            await inter.followup.send(embed=embed)
+            return
+
+        fields = [
+            ("NAS Name", f"`{nasname}`", True),
+            ("Shortname", f"`{shortname}`", True),
+            ("Type", f"`{type}`", True),
+            ("Ports", "`0`", True),
+            ("Description", "-", False)
+        ]
+        embed = success_embed("✅ NAS Berhasil Ditambahkan", fields=fields)
+        await inter.followup.send(embed=embed)
+
+    @commands.slash_command(
+        name="delnas",
+        description="Hapus NAS device dari database"
+    )
+    async def delnas(
+        self,
+        inter,
+        nasname: str = commands.Param(autocomplete=nasname_autocomplete, description="NAS yang akan dihapus")
+    ):
+        await inter.response.defer()
+        nasname = nasname.strip()
+
+        if " - " in nasname:
+            nasname = nasname.split(" - ")[0].strip()
+
+        try:
+            existing = await fetch("SELECT id, nasname, shortname FROM nas WHERE nasname=%s LIMIT 1", (nasname,))
+            if not existing:
+                embed = error_embed("❌ NAS Tidak Ditemukan", f"NAS dengan nasname `{nasname}` tidak ada di database.")
+                await inter.followup.send(embed=embed)
+                return
+
+            await execute("DELETE FROM nas WHERE nasname=%s", (nasname,))
+            logger.info(f"NAS '{nasname}' berhasil dihapus")
+        except Exception as e:
+            logger.exception(f"Gagal menghapus NAS: {e}")
+            embed = error_embed("❌ Gagal Menghapus NAS", f"Error: {e}")
+            await inter.followup.send(embed=embed)
+            return
+
+        nas_info = existing[0]
+        fields = [
+            ("NAS Name", f"`{nas_info.get('nasname')}`", True),
+            ("Shortname", f"`{nas_info.get('shortname') or '-'}`", True)
+        ]
+        embed = success_embed("✅ NAS Berhasil Dihapus", fields=fields)
+        await inter.followup.send(embed=embed)
+
+    @commands.slash_command(
+        name="viewnas",
+        description="Lihat detail NAS atau daftar singkat semua NAS",
+        guild_ids=GUILD_IDS
+    )
+    async def viewnas(self, inter, nas: str = commands.Param(autocomplete=nasname_autocomplete, description="Pilih NAS (opsional)")):
+        await inter.response.defer()
+        try:
+            if nas:
+                if " - " in nas:
+                    nas = nas.split(" - ")[0].strip()
+                rows = await fetch("SELECT id, nasname, shortname, type, ports, secret, description FROM nas WHERE nasname=%s LIMIT 1", (nas,))
+                if not rows:
+                    embed = error_embed("❌ NAS Tidak Ditemukan", f"NAS `{nas}` tidak ada di database.")
+                    await inter.followup.send(embed=embed)
+                    return
+
+                r = rows[0]
+                fields = [
+                    ("ID", f"`{r.get('id')}`", True),
+                    ("NAS Name", f"`{r.get('nasname') or '-'}`", True),
+                    ("Shortname", f"`{r.get('shortname') or '-'}`", True),
+                    ("Type", f"`{r.get('type') or '-'}`", True),
+                    ("Ports", f"`{r.get('ports') or '-'}`", True),
+                    ("Secret", f"`{r.get('secret') or '-'}`", False),
+                    ("Description", f"{r.get('description') or '-'}", False),
+                ]
+                embed = info_embed(f"🖥️ NAS Detail: {r.get('nasname')}", fields=fields)
+                await inter.followup.send(embed=embed)
+                return
+
+            # no specific NAS provided -> list brief
+            rows = await fetch("SELECT id, nasname, shortname, type FROM nas ORDER BY id LIMIT 200")
+        except Exception as e:
+            embed = error_embed("❌ Error", f"Gagal mengambil data NAS: {e}")
+            await inter.followup.send(embed=embed)
+            return
+
+        if not rows:
+            embed = warning_embed("⚠️ Tidak Ada NAS", "Tidak ada NAS terdaftar di database.")
+            await inter.followup.send(embed=embed)
+            return
+
+        result = "\n".join(f"• **{r['id']}** - {r.get('nasname') or '-'} ({r.get('shortname') or '-'}) — `{r.get('type') or '-'}`" for r in rows)
+        embed = info_embed("🖥️ NAS List", result)
+        await inter.followup.send(embed=embed)
+
+    @commands.slash_command(
+        name="editnas",
+        description="Edit field NAS yang sudah ada (hanya field yang diberikan akan diupdate)",
+        guild_ids=GUILD_IDS
+    )
+    async def editnas(
+        self,
+        inter,
+        nas: str = commands.Param(autocomplete=nasname_autocomplete, description="Pilih NAS yang akan diubah"),
+        secret: str = None,
+        type: str = commands.Param(default=None, choices=NAS_TYPE_CHOICES, description="Ubah tipe NAS (opsional)"),
+        shortname: str = None,
+        ports: int = None,
+        description: str = None
+    ):
+        await inter.response.defer()
+        nas_input = nas.strip()
+        if " - " in nas_input:
+            nas_input = nas_input.split(" - ")[0].strip()
+
+        try:
+            existing = await fetch("SELECT id FROM nas WHERE nasname=%s LIMIT 1", (nas_input,))
+            if not existing:
+                embed = error_embed("❌ NAS Tidak Ditemukan", f"NAS `{nas_input}` tidak ada di database.")
+                await inter.followup.send(embed=embed)
+                return
+
+            updates = {}
+            params = []
+            if secret is not None:
+                updates['secret'] = secret
+            if type is not None:
+                updates['type'] = type
+            if shortname is not None:
+                updates['shortname'] = shortname
+            if ports is not None:
+                try:
+                    ports = int(ports)
+                    updates['ports'] = ports
+                except Exception:
+                    embed = error_embed("❌ Format Ports Tidak Valid", "Field `ports` harus berupa angka.")
+                    await inter.followup.send(embed=embed)
+                    return
+            if description is not None:
+                updates['description'] = description
+
+            if not updates:
+                embed = warning_embed("⚠️ Tidak Ada Perubahan", "Tidak ada field yang diberikan untuk diupdate.")
+                await inter.followup.send(embed=embed)
+                return
+
+            set_clause = ", ".join(f"{k}=%s" for k in updates.keys())
+            params = list(updates.values()) + [nas_input]
+            sql = f"UPDATE nas SET {set_clause} WHERE nasname=%s"
+            await execute(sql, tuple(params))
+            logger.info(f"NAS '{nas_input}' diupdate: {list(updates.keys())}")
+        except Exception as e:
+            logger.exception(f"Gagal mengupdate NAS: {e}")
+            embed = error_embed("❌ Gagal Mengupdate NAS", f"Error: {e}")
+            await inter.followup.send(embed=embed)
+            return
+
+        fields = [(k.capitalize(), f"`{v}`", True) for k, v in updates.items()]
+        embed = success_embed("✅ NAS Berhasil Diupdate", fields=fields)
         await inter.followup.send(embed=embed)
 
 

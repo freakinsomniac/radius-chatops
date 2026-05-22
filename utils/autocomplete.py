@@ -32,6 +32,27 @@ async def operator_autocomplete(inter: disnake.ApplicationCommandInteraction, us
     return [op for op in operators if op.startswith(user_input)]
 
 
+async def nasname_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
+    try:
+        rows = await fetch(
+            "SELECT nasname, shortname FROM nas WHERE nasname LIKE %s ORDER BY nasname LIMIT 25",
+            (f"%{user_input}%",)
+        )
+        if not rows:
+            return []
+        result = []
+        for r in rows:
+            nasname = r.get('nasname', '')
+            shortname = r.get('shortname', '')
+            if shortname:
+                result.append(f"{nasname} - {shortname}")
+            else:
+                result.append(nasname)
+        return result
+    except Exception:
+        return []
+
+
 async def nas_ip_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
     try:
         if not user_input or user_input.strip() == "":
