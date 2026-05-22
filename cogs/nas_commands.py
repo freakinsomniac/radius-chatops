@@ -9,9 +9,6 @@ from utils.exceptions import UserNotFound, DatabaseError
 
 logger = logging.getLogger(__name__)
 
-GUILD_ID = os.getenv("GUILD_ID")
-GUILD_IDS = [int(GUILD_ID)] if GUILD_ID else None
-
 NAS_TYPE_CHOICES = {
     "other": "other",
     "mikrotik": "mikrotik",
@@ -361,8 +358,7 @@ class NasCommands(commands.Cog):
 
     @commands.slash_command(
         name="viewnas",
-        description="Lihat detail NAS atau daftar singkat semua NAS",
-        guild_ids=GUILD_IDS
+        description="Lihat detail NAS atau daftar singkat semua NAS"
     )
     async def viewnas(self, inter, nas: str = commands.Param(autocomplete=nasname_autocomplete, description="Pilih NAS (opsional)")):
         await inter.response.defer()
@@ -408,8 +404,7 @@ class NasCommands(commands.Cog):
 
     @commands.slash_command(
         name="editnas",
-        description="Edit field NAS yang sudah ada (hanya field yang diberikan akan diupdate)",
-        guild_ids=GUILD_IDS
+        description="Edit field NAS yang sudah ada (hanya field yang diberikan akan diupdate)"
     )
     async def editnas(
         self,

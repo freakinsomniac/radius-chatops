@@ -12,12 +12,6 @@ logger = logging.getLogger(__name__)
 class UserCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.g_id = None
-
-    async def cog_load(self):
-        import os
-        GUILD_ID = os.getenv("GUILD_ID")
-        self.g_id = int(GUILD_ID) if GUILD_ID else None
 
     @commands.slash_command(
         name="users",

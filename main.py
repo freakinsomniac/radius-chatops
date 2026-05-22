@@ -34,6 +34,8 @@ async def on_ready():
     for c in cmds:
         try:
             gids = getattr(c, "guild_ids", None)
+            if gids is None and bot.test_guilds:
+                gids = tuple(bot.test_guilds)
         except Exception:
             gids = None
         print("-", c.name, "guild_ids=", gids)
