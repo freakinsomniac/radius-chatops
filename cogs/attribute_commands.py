@@ -22,13 +22,28 @@ class AttributeCommands(commands.Cog):
         username = username.strip()
         
         try:
+            user_exists = await fetch("SELECT 1 FROM radcheck WHERE username=%s LIMIT 1", (username,))
+            if not user_exists:
+                group_exists = await fetch("SELECT 1 FROM radusergroup WHERE username=%s LIMIT 1", (username,))
+                if not group_exists:
+                    raise UserNotFound(f"User `{username}` tidak ditemukan di database")
+            
             rows = await fetch(
                 "SELECT attribute, op, value FROM radcheck WHERE username=%s ORDER BY attribute",
                 (username,)
             )
             
-            if not rows:
-                raise UserNotFound(f"User `{username}` tidak memiliki attributes")
+            group_rows = await fetch(
+                "SELECT g.groupname, gc.attribute, gc.op, gc.value "
+                "FROM radusergroup g "
+                "JOIN radgroupcheck gc ON g.groupname = gc.groupname "
+                "WHERE g.username = %s "
+                "ORDER BY g.groupname, gc.attribute",
+                (username,)
+            )
+            
+            if not rows and not group_rows:
+                raise UserNotFound(f"User `{username}` tidak memiliki personal maupun group check attributes")
             
             nas_map = {}
             try:
@@ -55,6 +70,21 @@ class AttributeCommands(commands.Cog):
                         result_lines.append(f"• **{attr}** `{op}` `{value}`")
                 else:
                     result_lines.append(f"• **{attr}** `{op}` `{value}`")
+            
+            for r in group_rows:
+                groupname = r['groupname']
+                attr = r['attribute']
+                op = r['op']
+                value = r['value']
+                
+                if attr == "NAS-IP-Address":
+                    nas_name = nas_map.get(value)
+                    if nas_name:
+                        result_lines.append(f"• **{attr}** `{op}` `{value}` - **{nas_name}** *(Group: {groupname})*")
+                    else:
+                        result_lines.append(f"• **{attr}** `{op}` `{value}` *(Group: {groupname})*")
+                else:
+                    result_lines.append(f"• **{attr}** `{op}` `{value}` *(Group: {groupname})*")
             
             result = "\n".join(result_lines)
             embed = info_embed(f"📋 Check Attributes: {username}", result)
