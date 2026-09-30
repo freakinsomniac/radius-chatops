@@ -45,31 +45,6 @@ class NasCommands(commands.Cog):
         await inter.followup.send(embed=embed)
 
     @commands.slash_command(
-        name="nasstatus",
-        description="Show active session count per NAS or for a specific NAS"
-    )
-    async def nasstatus(self, inter, nasip: str = None):
-        await inter.response.defer()
-        try:
-            if nasip:
-                rows = await fetch("SELECT nasipaddress, COUNT(*) AS active FROM radacct WHERE acctstoptime IS NULL AND nasipaddress=%s GROUP BY nasipaddress", (nasip,))
-            else:
-                rows = await fetch("SELECT nasipaddress, COUNT(*) AS active FROM radacct WHERE acctstoptime IS NULL GROUP BY nasipaddress")
-        except Exception as e:
-            embed = error_embed("❌ Error", f"Gagal mengambil status NAS: {e}")
-            await inter.followup.send(embed=embed)
-            return
-
-        if not rows:
-            embed = warning_embed("⚠️ Tidak Ada Session", "Tidak ada session aktif atau NAS tidak ditemukan.")
-            await inter.followup.send(embed=embed)
-            return
-
-        result = "\n".join(f"• {r.get('nasipaddress') or '-'}: **{r.get('active')}** active" for r in rows)
-        embed = info_embed("🖥️ NAS Status", result)
-        await inter.followup.send(embed=embed)
-
-    @commands.slash_command(
         name="nasusers",
         description="List users currently connected to a NAS"
     )

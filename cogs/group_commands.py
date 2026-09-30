@@ -118,36 +118,6 @@ class GroupCommands(commands.Cog):
             await inter.followup.send(embed=embed)
 
     @commands.slash_command(
-        name="groupcheckadd",
-        description="Add a check attribute to a group (radgroupcheck)"
-    )
-    async def groupcheckadd(self, inter, groupname: str = commands.Param(autocomplete=groupname_autocomplete), attribute: str = commands.Param(autocomplete=attribute_autocomplete), op: str = commands.Param(autocomplete=operator_autocomplete), value: str = None):
-        await inter.response.defer()
-        groupname = groupname.strip()
-        attribute = attribute.strip()
-        op = op.strip()
-        if value:
-            value = value.strip()
-        
-        try:
-            await execute("INSERT INTO radgroupcheck (groupname, attribute, op, value) VALUES (%s, %s, %s, %s)", (groupname, attribute, op, value))
-            logger.info(f"Check attribute '{attribute}' ditambahkan ke group '{groupname}'")
-            
-            fields = [("Group", f"`{groupname}`", True), ("Attribute", f"`{attribute}`", True), ("Operator", f"`{op}`", True), ("Value", f"`{value}`", True)]
-            embed = success_embed("✅ Group Check Berhasil Ditambahkan", fields=fields)
-            await inter.followup.send(embed=embed)
-            
-        except DatabaseError as e:
-            logger.error(f"Database error saat groupcheckadd: {e}")
-            embed = error_embed("❌ Gagal Menambah Group Check", "Terjadi kesalahan pada database")
-            await inter.followup.send(embed=embed)
-            
-        except Exception as e:
-            logger.exception(f"Unexpected error saat groupcheckadd: {e}")
-            embed = error_embed("❌ Error", "Terjadi error yang tidak terduga")
-            await inter.followup.send(embed=embed)
-
-    @commands.slash_command(
         name="groupcheckremove",
         description="Remove check attributes from a group or remove entire group checks"
     )

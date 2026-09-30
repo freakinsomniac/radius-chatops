@@ -14,38 +14,6 @@ class StatsCommands(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(
-        name="online",
-        description="List currently online users (radacct)"
-    )
-    async def online(self, inter):
-        await inter.response.defer()
-        
-        try:
-            query = "SELECT username, nasipaddress, framedipaddress, acctstarttime FROM radacct WHERE acctstoptime IS NULL ORDER BY username LIMIT 50;"
-            rows = await fetch(query)
-            
-            if not rows:
-                raise UserNotFound("Saat ini tidak ada user yang sedang aktif")
-            
-            result = "\n".join(f"• {r['username']} @ {r.get('nasipaddress') or '-'} ({r.get('framedipaddress') or '-'})" for r in rows)
-            embed = info_embed(f"🟢 User Online ({len(rows)})", result)
-            logger.info(f"Online users retrieved, count: {len(rows)}")
-            
-        except UserNotFound as e:
-            logger.info(f"No online users found")
-            embed = warning_embed("⚠️ Tidak Ada User Online", str(e))
-            
-        except DatabaseError as e:
-            logger.error(f"Database error saat online: {e}")
-            embed = error_embed("❌ Gagal Mengambil Data", "Terjadi kesalahan pada database")
-            
-        except Exception as e:
-            logger.exception(f"Unexpected error saat online: {e}")
-            embed = error_embed("❌ Error", "Terjadi error yang tidak terduga")
-        
-        await inter.followup.send(embed=embed)
-
-    @commands.slash_command(
         name="userstats",
         description="Show basic session stats for a user (radacct)"
     )
