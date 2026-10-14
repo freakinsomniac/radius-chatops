@@ -35,103 +35,25 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
+      "community": 11,
+      "community_name": "success_embed",
       "file_type": "code",
       "norm_label": "usercommands",
       "source_file": "cogs/user_commands.py",
       "source_location": "L12"
     },
     {
-      "id": "utils_exceptions_databaseerror",
-      "label": "DatabaseError",
+      "id": "utils_embeds_responsetype",
+      "label": "ResponseType",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
+      "community": 4,
+      "community_name": "nas_commands.py",
       "file_type": "code",
-      "norm_label": "databaseerror",
-      "source_file": "utils/exceptions.py",
-      "source_location": "L5"
-    },
-    {
-      "id": "utils_exceptions_duplicateuser",
-      "label": "DuplicateUser",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
-      "file_type": "code",
-      "norm_label": "duplicateuser",
-      "source_file": "utils/exceptions.py",
-      "source_location": "L13"
-    },
-    {
-      "id": "utils_exceptions_groupnotfound",
-      "label": "GroupNotFound",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
-      "file_type": "code",
-      "norm_label": "groupnotfound",
-      "source_file": "utils/exceptions.py",
-      "source_location": "L17"
-    },
-    {
-      "id": "utils_exceptions_nasnotfound",
-      "label": "NASNotFound",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
-      "file_type": "code",
-      "norm_label": "nasnotfound",
-      "source_file": "utils/exceptions.py",
-      "source_location": "L21"
-    },
-    {
-      "id": "utils_exceptions_operationerror",
-      "label": "OperationError",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
-      "file_type": "code",
-      "norm_label": "operationerror",
-      "source_file": "utils/exceptions.py",
-      "source_location": "L25"
-    },
-    {
-      "id": "utils_exceptions_poolnotinitialized",
-      "label": "PoolNotInitialized",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
-      "file_type": "code",
-      "norm_label": "poolnotinitialized",
-      "source_file": "utils/exceptions.py",
-      "source_location": "L29"
-    },
-    {
-      "id": "utils_exceptions_radiusexception",
-      "label": "RadiusException",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
-      "file_type": "code",
-      "norm_label": "radiusexception",
-      "source_file": "utils/exceptions.py",
-      "source_location": "L1"
+      "norm_label": "responsetype",
+      "source_file": "utils/embeds.py",
+      "source_location": "L4"
     },
     {
       "id": "cogs_attribute_commands_attributecommands",
@@ -140,7 +62,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": "attributecommands",
       "source_file": "cogs/attribute_commands.py",
@@ -153,24 +75,102 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": "statscommands",
       "source_file": "cogs/stats_commands.py",
       "source_location": "L12"
     },
     {
-      "id": "utils_embeds_responsetype",
-      "label": "ResponseType",
+      "id": "utils_exceptions_databaseerror",
+      "label": "DatabaseError",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
-      "norm_label": "responsetype",
-      "source_file": "utils/embeds.py",
-      "source_location": "L4"
+      "norm_label": "databaseerror",
+      "source_file": "utils/exceptions.py",
+      "source_location": "L5"
+    },
+    {
+      "id": "utils_exceptions_duplicateuser",
+      "label": "DuplicateUser",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "UserNotFound",
+      "file_type": "code",
+      "norm_label": "duplicateuser",
+      "source_file": "utils/exceptions.py",
+      "source_location": "L13"
+    },
+    {
+      "id": "utils_exceptions_groupnotfound",
+      "label": "GroupNotFound",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "UserNotFound",
+      "file_type": "code",
+      "norm_label": "groupnotfound",
+      "source_file": "utils/exceptions.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "utils_exceptions_nasnotfound",
+      "label": "NASNotFound",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "UserNotFound",
+      "file_type": "code",
+      "norm_label": "nasnotfound",
+      "source_file": "utils/exceptions.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "utils_exceptions_operationerror",
+      "label": "OperationError",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "UserNotFound",
+      "file_type": "code",
+      "norm_label": "operationerror",
+      "source_file": "utils/exceptions.py",
+      "source_location": "L25"
+    },
+    {
+      "id": "utils_exceptions_poolnotinitialized",
+      "label": "PoolNotInitialized",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "UserNotFound",
+      "file_type": "code",
+      "norm_label": "poolnotinitialized",
+      "source_file": "utils/exceptions.py",
+      "source_location": "L29"
+    },
+    {
+      "id": "utils_exceptions_radiusexception",
+      "label": "RadiusException",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "UserNotFound",
+      "file_type": "code",
+      "norm_label": "radiusexception",
+      "source_file": "utils/exceptions.py",
+      "source_location": "L1"
     },
     {
       "id": "utils_exceptions_usernotfound",
@@ -179,7 +179,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": "usernotfound",
       "source_file": "utils/exceptions.py",
@@ -192,11 +192,23 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "admin_commands.py",
+      "community_name": "AdminCommands",
       "file_type": "code",
       "norm_label": "admincommands",
       "source_file": "cogs/admin_commands.py",
       "source_location": "L19"
+    },
+    {
+      "id": "cogs_attribute_commands_attributecommands_checkattributes",
+      "label": ".checkattributes()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "error_embed",
+      "file_type": "code",
+      "norm_label": ".checkattributes()",
+      "source_file": "cogs/attribute_commands.py",
+      "source_location": "L20"
     },
     {
       "id": "cogs_nas_commands_nascommands_addnas",
@@ -208,7 +220,7 @@
       "file_type": "code",
       "norm_label": ".addnas()",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L256"
+      "source_location": "L336"
     },
     {
       "id": "cogs_nas_commands_nascommands_addnasip",
@@ -232,7 +244,7 @@
       "file_type": "code",
       "norm_label": ".delnas()",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L300"
+      "source_location": "L380"
     },
     {
       "id": "cogs_nas_commands_nascommands_editnas",
@@ -244,7 +256,7 @@
       "file_type": "code",
       "norm_label": ".editnas()",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L384"
+      "source_location": "L464"
     },
     {
       "id": "cogs_nas_commands_nascommands_init",
@@ -268,7 +280,7 @@
       "file_type": "code",
       "norm_label": ".listnasip()",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L208"
+      "source_location": "L273"
     },
     {
       "id": "cogs_nas_commands_nascommands_naslist",
@@ -304,7 +316,7 @@
       "file_type": "code",
       "norm_label": ".removenasip()",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L155"
+      "source_location": "L183"
     },
     {
       "id": "cogs_nas_commands_nascommands_viewnas",
@@ -316,19 +328,31 @@
       "file_type": "code",
       "norm_label": ".viewnas()",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L338"
+      "source_location": "L418"
     },
     {
-      "id": "cogs_nas_commands_setup",
-      "label": "setup()",
+      "id": "cogs_user_commands_usercommands_users",
+      "label": ".users()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "error_embed",
       "file_type": "code",
-      "norm_label": "setup()",
-      "source_file": "cogs/nas_commands.py",
-      "source_location": "L446"
+      "norm_label": ".users()",
+      "source_file": "cogs/user_commands.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "utils_embeds_create_embed",
+      "label": "create_embed()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "error_embed",
+      "file_type": "code",
+      "norm_label": "create_embed()",
+      "source_file": "utils/embeds.py",
+      "source_location": "L10"
     },
     {
       "id": "utils_embeds_error_embed",
@@ -341,6 +365,18 @@
       "norm_label": "error_embed()",
       "source_file": "utils/embeds.py",
       "source_location": "L25"
+    },
+    {
+      "id": "utils_embeds_info_embed",
+      "label": "info_embed()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "error_embed",
+      "file_type": "code",
+      "norm_label": "info_embed()",
+      "source_file": "utils/embeds.py",
+      "source_location": "L28"
     },
     {
       "id": "utils_embeds_warning_embed",
@@ -389,18 +425,6 @@
       "norm_label": ".groupadd()",
       "source_file": "cogs/group_commands.py",
       "source_location": "L66"
-    },
-    {
-      "id": "cogs_group_commands_groupcommands_groupinfo",
-      "label": ".groupinfo()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "success_embed",
-      "file_type": "code",
-      "norm_label": ".groupinfo()",
-      "source_file": "cogs/group_commands.py",
-      "source_location": "L366"
     },
     {
       "id": "cogs_group_commands_groupcommands_groupnasadd",
@@ -475,6 +499,78 @@
       "source_location": "L38"
     },
     {
+      "id": "cogs_group_commands_setup",
+      "label": "setup()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "success_embed",
+      "file_type": "code",
+      "norm_label": "setup()",
+      "source_file": "cogs/group_commands.py",
+      "source_location": "L448"
+    },
+    {
+      "id": "cogs_user_commands_setup",
+      "label": "setup()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "success_embed",
+      "file_type": "code",
+      "norm_label": "setup()",
+      "source_file": "cogs/user_commands.py",
+      "source_location": "L178"
+    },
+    {
+      "id": "cogs_user_commands_usercommands_adduser",
+      "label": ".adduser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "success_embed",
+      "file_type": "code",
+      "norm_label": ".adduser()",
+      "source_file": "cogs/user_commands.py",
+      "source_location": "L51"
+    },
+    {
+      "id": "cogs_user_commands_usercommands_changepass",
+      "label": ".changepass()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "success_embed",
+      "file_type": "code",
+      "norm_label": ".changepass()",
+      "source_file": "cogs/user_commands.py",
+      "source_location": "L145"
+    },
+    {
+      "id": "cogs_user_commands_usercommands_deluser",
+      "label": ".deluser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "success_embed",
+      "file_type": "code",
+      "norm_label": ".deluser()",
+      "source_file": "cogs/user_commands.py",
+      "source_location": "L111"
+    },
+    {
+      "id": "cogs_user_commands_usercommands_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "success_embed",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "cogs/user_commands.py",
+      "source_location": "L13"
+    },
+    {
       "id": "database_db_execute",
       "label": "execute()",
       "_callable": true,
@@ -499,76 +595,28 @@
       "source_location": "L22"
     },
     {
-      "id": "cogs_user_commands_usercommands_adduser",
-      "label": ".adduser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "fetch",
-      "file_type": "code",
-      "norm_label": ".adduser()",
-      "source_file": "cogs/user_commands.py",
-      "source_location": "L51"
-    },
-    {
-      "id": "cogs_user_commands_usercommands_changepass",
-      "label": ".changepass()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "fetch",
-      "file_type": "code",
-      "norm_label": ".changepass()",
-      "source_file": "cogs/user_commands.py",
-      "source_location": "L145"
-    },
-    {
-      "id": "cogs_user_commands_usercommands_deluser",
-      "label": ".deluser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "fetch",
-      "file_type": "code",
-      "norm_label": ".deluser()",
-      "source_file": "cogs/user_commands.py",
-      "source_location": "L111"
-    },
-    {
-      "id": "cogs_user_commands_usercommands_users",
-      "label": ".users()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "fetch",
-      "file_type": "code",
-      "norm_label": ".users()",
-      "source_file": "cogs/user_commands.py",
-      "source_location": "L20"
-    },
-    {
-      "id": "database_db_fetch",
-      "label": "fetch()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "fetch",
-      "file_type": "code",
-      "norm_label": "fetch()",
-      "source_file": "database/db.py",
-      "source_location": "L27"
-    },
-    {
       "id": "cogs_group_commands_build_nas_regex",
       "label": "_build_nas_regex()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "_build_nas_regex()",
       "source_file": "cogs/group_commands.py",
       "source_location": "L24"
+    },
+    {
+      "id": "cogs_group_commands_groupcommands_groupinfo",
+      "label": ".groupinfo()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "fetch",
+      "file_type": "code",
+      "norm_label": ".groupinfo()",
+      "source_file": "cogs/group_commands.py",
+      "source_location": "L366"
     },
     {
       "id": "cogs_group_commands_parse_nas_ips",
@@ -576,23 +624,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "_parse_nas_ips()",
       "source_file": "cogs/group_commands.py",
       "source_location": "L13"
     },
     {
-      "id": "cogs_group_commands_setup",
-      "label": "setup()",
+      "id": "database_db_fetch",
+      "label": "fetch()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
-      "norm_label": "setup()",
-      "source_file": "cogs/group_commands.py",
-      "source_location": "L448"
+      "norm_label": "fetch()",
+      "source_file": "database/db.py",
+      "source_location": "L27"
     },
     {
       "id": "utils_autocomplete_attribute_autocomplete",
@@ -600,7 +648,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "attribute_autocomplete()",
       "source_file": "utils/autocomplete.py",
@@ -612,7 +660,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "group_nas_ip_autocomplete()",
       "source_file": "utils/autocomplete.py",
@@ -624,7 +672,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "groupname_autocomplete()",
       "source_file": "utils/autocomplete.py",
@@ -636,7 +684,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "nas_ip_autocomplete()",
       "source_file": "utils/autocomplete.py",
@@ -648,7 +696,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "nasname_autocomplete()",
       "source_file": "utils/autocomplete.py",
@@ -660,11 +708,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "operator_autocomplete()",
       "source_file": "utils/autocomplete.py",
       "source_location": "L53"
+    },
+    {
+      "id": "utils_autocomplete_user_nas_ip_autocomplete",
+      "label": "user_nas_ip_autocomplete()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "fetch",
+      "file_type": "code",
+      "norm_label": "user_nas_ip_autocomplete()",
+      "source_file": "utils/autocomplete.py",
+      "source_location": "L161"
     },
     {
       "id": "utils_autocomplete_username_autocomplete",
@@ -672,35 +732,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "username_autocomplete()",
       "source_file": "utils/autocomplete.py",
       "source_location": "L7"
     },
     {
-      "id": "cogs_user_commands_setup",
+      "id": "cogs_admin_commands_cog_autocomplete",
+      "label": "cog_autocomplete()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "file_type": "code",
+      "norm_label": "cog_autocomplete()",
+      "source_file": "cogs/admin_commands.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "cogs_nas_commands_setup",
       "label": "setup()",
       "_callable": true,
       "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
+      "community": 4,
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "setup()",
-      "source_file": "cogs/user_commands.py",
-      "source_location": "L178"
-    },
-    {
-      "id": "cogs_user_commands_usercommands_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "cogs/user_commands.py",
-      "source_location": "L13"
+      "source_file": "cogs/nas_commands.py",
+      "source_location": "L526"
     },
     {
       "id": "database_db_close_db",
@@ -708,7 +768,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "close_db()",
       "source_file": "database/db.py",
@@ -720,7 +780,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "init_db()",
       "source_file": "database/db.py",
@@ -732,7 +792,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "load_cogs()",
       "source_file": "main.py",
@@ -744,7 +804,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "main.py",
@@ -756,7 +816,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "on_ready()",
       "source_file": "main.py",
@@ -768,7 +828,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "ping()",
       "source_file": "main.py",
@@ -780,23 +840,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "test_db.py",
       "source_location": "L5"
-    },
-    {
-      "id": "cogs_attribute_commands_attributecommands_checkattributes",
-      "label": ".checkattributes()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "info_embed",
-      "file_type": "code",
-      "norm_label": ".checkattributes()",
-      "source_file": "cogs/attribute_commands.py",
-      "source_location": "L20"
     },
     {
       "id": "cogs_attribute_commands_attributecommands_init",
@@ -804,7 +852,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "cogs/attribute_commands.py",
@@ -816,7 +864,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": "setup()",
       "source_file": "cogs/attribute_commands.py",
@@ -828,7 +876,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": "setup()",
       "source_file": "cogs/stats_commands.py",
@@ -840,7 +888,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": ".activecount()",
       "source_file": "cogs/stats_commands.py",
@@ -852,7 +900,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "cogs/stats_commands.py",
@@ -864,7 +912,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": ".lastlogin()",
       "source_file": "cogs/stats_commands.py",
@@ -876,35 +924,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": ".userstats()",
       "source_file": "cogs/stats_commands.py",
       "source_location": "L20"
-    },
-    {
-      "id": "utils_embeds_create_embed",
-      "label": "create_embed()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "info_embed",
-      "file_type": "code",
-      "norm_label": "create_embed()",
-      "source_file": "utils/embeds.py",
-      "source_location": "L10"
-    },
-    {
-      "id": "utils_embeds_info_embed",
-      "label": "info_embed()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "info_embed",
-      "file_type": "code",
-      "norm_label": "info_embed()",
-      "source_file": "utils/embeds.py",
-      "source_location": "L28"
     },
     {
       "id": "cogs_admin_commands_admincommands_init",
@@ -912,7 +936,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "admin_commands.py",
+      "community_name": "AdminCommands",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "cogs/admin_commands.py",
@@ -924,7 +948,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "admin_commands.py",
+      "community_name": "AdminCommands",
       "file_type": "code",
       "norm_label": "._is_owner()",
       "source_file": "cogs/admin_commands.py",
@@ -936,7 +960,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "admin_commands.py",
+      "community_name": "AdminCommands",
       "file_type": "code",
       "norm_label": ".reload()",
       "source_file": "cogs/admin_commands.py",
@@ -948,23 +972,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "admin_commands.py",
+      "community_name": "AdminCommands",
       "file_type": "code",
       "norm_label": ".restart()",
       "source_file": "cogs/admin_commands.py",
       "source_location": "L71"
-    },
-    {
-      "id": "cogs_admin_commands_cog_autocomplete",
-      "label": "cog_autocomplete()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "admin_commands.py",
-      "file_type": "code",
-      "norm_label": "cog_autocomplete()",
-      "source_file": "cogs/admin_commands.py",
-      "source_location": "L14"
     },
     {
       "id": "cogs_admin_commands_setup",
@@ -972,11 +984,22 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "admin_commands.py",
+      "community_name": "AdminCommands",
       "file_type": "code",
       "norm_label": "setup()",
       "source_file": "cogs/admin_commands.py",
       "source_location": "L87"
+    },
+    {
+      "id": "cogs_attribute_commands_py_slash_command",
+      "label": "slash_command",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "error_embed",
+      "file_type": "code",
+      "norm_label": "slash_command",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "cogs_nas_commands_py_slash_command",
@@ -1231,55 +1254,22 @@
       "id": "cogs_user_commands_py_slash_command",
       "label": "slash_command",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "fetch",
+      "community": 11,
+      "community_name": "success_embed",
       "file_type": "code",
       "norm_label": "slash_command",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "cogs_attribute_commands",
-      "label": "attribute_commands.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "group_commands.py",
-      "file_type": "code",
-      "norm_label": "attribute_commands.py",
-      "source_file": "cogs/attribute_commands.py",
-      "source_location": "L1"
-    },
-    {
       "id": "cogs_group_commands",
       "label": "group_commands.py",
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "group_commands.py",
       "source_file": "cogs/group_commands.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "cogs_nas_commands",
-      "label": "nas_commands.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "group_commands.py",
-      "file_type": "code",
-      "norm_label": "nas_commands.py",
-      "source_file": "cogs/nas_commands.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "cogs_user_commands",
-      "label": "user_commands.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "group_commands.py",
-      "file_type": "code",
-      "norm_label": "user_commands.py",
-      "source_file": "cogs/user_commands.py",
       "source_location": "L1"
     },
     {
@@ -1287,7 +1277,7 @@
       "label": "autocomplete.py",
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "autocomplete.py",
       "source_file": "utils/autocomplete.py",
@@ -1298,32 +1288,76 @@
       "label": "ApplicationCommandInteraction",
       "_origin": "ast",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "file_type": "code",
       "norm_label": "applicationcommandinteraction",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "exception",
-      "label": "Exception",
+      "id": "cogs_admin_commands",
+      "label": "admin_commands.py",
       "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
+      "community": 4,
+      "community_name": "nas_commands.py",
       "file_type": "code",
-      "norm_label": "exception",
+      "norm_label": "admin_commands.py",
+      "source_file": "cogs/admin_commands.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "cogs_admin_commands_py_applicationcommandinteraction",
+      "label": "ApplicationCommandInteraction",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "file_type": "code",
+      "norm_label": "applicationcommandinteraction",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "utils_exceptions",
-      "label": "exceptions.py",
+      "id": "cogs_attribute_commands",
+      "label": "attribute_commands.py",
       "_origin": "ast",
-      "community": 3,
-      "community_name": "DatabaseError",
+      "community": 4,
+      "community_name": "nas_commands.py",
       "file_type": "code",
-      "norm_label": "exceptions.py",
-      "source_file": "utils/exceptions.py",
+      "norm_label": "attribute_commands.py",
+      "source_file": "cogs/attribute_commands.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "cogs_nas_commands",
+      "label": "nas_commands.py",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "file_type": "code",
+      "norm_label": "nas_commands.py",
+      "source_file": "cogs/nas_commands.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "cogs_stats_commands",
+      "label": "stats_commands.py",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "file_type": "code",
+      "norm_label": "stats_commands.py",
+      "source_file": "cogs/stats_commands.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "cogs_user_commands",
+      "label": "user_commands.py",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "file_type": "code",
+      "norm_label": "user_commands.py",
+      "source_file": "cogs/user_commands.py",
       "source_location": "L1"
     },
     {
@@ -1331,18 +1365,29 @@
       "label": "db.py",
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "db.py",
       "source_file": "database/db.py",
       "source_location": "L1"
     },
     {
+      "id": "enum",
+      "label": "Enum",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "event",
       "label": "event",
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "event",
       "source_file": "",
@@ -1353,7 +1398,7 @@
       "label": "main.py",
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "main.py",
       "source_file": "main.py",
@@ -1364,7 +1409,7 @@
       "label": "slash_command",
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "slash_command",
       "source_file": "",
@@ -1375,32 +1420,21 @@
       "label": "test_db.py",
       "_origin": "ast",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "file_type": "code",
       "norm_label": "test_db.py",
       "source_file": "test_db.py",
       "source_location": "L1"
     },
     {
-      "id": "cogs_attribute_commands_py_slash_command",
-      "label": "slash_command",
+      "id": "utils_embeds",
+      "label": "embeds.py",
       "_origin": "ast",
-      "community": 5,
-      "community_name": "info_embed",
+      "community": 4,
+      "community_name": "nas_commands.py",
       "file_type": "code",
-      "norm_label": "slash_command",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "cogs_stats_commands",
-      "label": "stats_commands.py",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "info_embed",
-      "file_type": "code",
-      "norm_label": "stats_commands.py",
-      "source_file": "cogs/stats_commands.py",
+      "norm_label": "embeds.py",
+      "source_file": "utils/embeds.py",
       "source_location": "L1"
     },
     {
@@ -1408,62 +1442,40 @@
       "label": "slash_command",
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
       "norm_label": "slash_command",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "enum",
-      "label": "Enum",
+      "id": "exception",
+      "label": "Exception",
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
-      "norm_label": "enum",
+      "norm_label": "exception",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "utils_embeds",
-      "label": "embeds.py",
+      "id": "utils_exceptions",
+      "label": "exceptions.py",
       "_origin": "ast",
       "community": 5,
-      "community_name": "info_embed",
+      "community_name": "UserNotFound",
       "file_type": "code",
-      "norm_label": "embeds.py",
-      "source_file": "utils/embeds.py",
+      "norm_label": "exceptions.py",
+      "source_file": "utils/exceptions.py",
       "source_location": "L1"
-    },
-    {
-      "id": "cogs_admin_commands",
-      "label": "admin_commands.py",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "admin_commands.py",
-      "file_type": "code",
-      "norm_label": "admin_commands.py",
-      "source_file": "cogs/admin_commands.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "cogs_admin_commands_py_applicationcommandinteraction",
-      "label": "ApplicationCommandInteraction",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "admin_commands.py",
-      "file_type": "code",
-      "norm_label": "applicationcommandinteraction",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "cogs_admin_commands_py_slash_command",
       "label": "slash_command",
       "_origin": "ast",
       "community": 6,
-      "community_name": "admin_commands.py",
+      "community_name": "AdminCommands",
       "file_type": "code",
       "norm_label": "slash_command",
       "source_file": "",
@@ -1517,47 +1529,11 @@
       "type": "external"
     },
     {
-      "id": "disnake",
-      "label": "disnake",
-      "_origin": "semantic",
-      "community": 2,
-      "community_name": "group_commands.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "disnake",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "disnake_ext",
-      "label": "disnake_ext",
-      "_origin": "semantic",
-      "community": 2,
-      "community_name": "group_commands.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "disnake_ext",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "logging",
-      "label": "logging",
-      "_origin": "semantic",
-      "community": 2,
-      "community_name": "group_commands.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "logging",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "re",
       "label": "re",
       "_origin": "semantic",
       "community": 2,
-      "community_name": "group_commands.py",
+      "community_name": "fetch",
       "external": true,
       "file_type": "concept",
       "norm_label": "re",
@@ -1569,7 +1545,7 @@
       "label": "aiomysql",
       "_origin": "semantic",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "aiomysql",
@@ -1581,10 +1557,34 @@
       "label": "asyncio",
       "_origin": "semantic",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "asyncio",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "disnake",
+      "label": "disnake",
+      "_origin": "semantic",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "disnake",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "disnake_ext",
+      "label": "disnake_ext",
+      "_origin": "semantic",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "disnake_ext",
       "source_file": "",
       "type": "external"
     },
@@ -1593,7 +1593,7 @@
       "label": "disnake_ext_commands",
       "_origin": "semantic",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "disnake_ext_commands",
@@ -1605,10 +1605,22 @@
       "label": "dotenv",
       "_origin": "semantic",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "dotenv",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "logging",
+      "label": "logging",
+      "_origin": "semantic",
+      "community": 4,
+      "community_name": "nas_commands.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "logging",
       "source_file": "",
       "type": "external"
     },
@@ -1617,7 +1629,7 @@
       "label": "os",
       "_origin": "semantic",
       "community": 4,
-      "community_name": "db.py",
+      "community_name": "nas_commands.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "os",
@@ -1628,8 +1640,8 @@
       "id": "sys",
       "label": "sys",
       "_origin": "semantic",
-      "community": 6,
-      "community_name": "admin_commands.py",
+      "community": 4,
+      "community_name": "nas_commands.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "sys",
@@ -2283,7 +2295,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L269",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -2295,7 +2307,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L271",
+      "source_location": "L351",
       "weight": 1.0
     },
     {
@@ -2307,7 +2319,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L275",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -2319,7 +2331,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L282",
+      "source_location": "L362",
       "weight": 1.0
     },
     {
@@ -2331,7 +2343,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L293",
+      "source_location": "L373",
       "weight": 1.0
     },
     {
@@ -2391,7 +2403,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L148",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
@@ -2415,7 +2427,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L312",
+      "source_location": "L392",
       "weight": 1.0
     },
     {
@@ -2427,7 +2439,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L314",
+      "source_location": "L394",
       "weight": 1.0
     },
     {
@@ -2439,7 +2451,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L318",
+      "source_location": "L398",
       "weight": 1.0
     },
     {
@@ -2451,7 +2463,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L331",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -2463,7 +2475,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L400",
+      "source_location": "L480",
       "weight": 1.0
     },
     {
@@ -2475,7 +2487,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L402",
+      "source_location": "L482",
       "weight": 1.0
     },
     {
@@ -2487,7 +2499,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L426",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -2499,7 +2511,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L433",
+      "source_location": "L513",
       "weight": 1.0
     },
     {
@@ -2511,7 +2523,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L442",
+      "source_location": "L522",
       "weight": 1.0
     },
     {
@@ -2523,7 +2535,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L213",
+      "source_location": "L278",
+      "weight": 1.0
+    },
+    {
+      "source": "cogs_nas_commands_nascommands_listnasip",
+      "target": "utils_exceptions_usernotfound",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "cogs/nas_commands.py",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -2535,19 +2559,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L218",
-      "weight": 1.0
-    },
-    {
-      "source": "cogs_nas_commands_nascommands_listnasip",
-      "target": "utils_embeds_warning_embed",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "cogs/nas_commands.py",
-      "source_location": "L223",
+      "source_location": "L287",
       "weight": 1.0
     },
     {
@@ -2559,7 +2571,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L248",
+      "source_location": "L296",
       "weight": 1.0
     },
     {
@@ -2667,19 +2679,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L170",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
       "source": "cogs_nas_commands_nascommands_removenasip",
-      "target": "utils_exceptions_usernotfound",
+      "target": "utils_embeds_warning_embed",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L175",
+      "source_location": "L203",
       "weight": 1.0
     },
     {
@@ -2691,19 +2703,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L177",
-      "weight": 1.0
-    },
-    {
-      "source": "cogs_nas_commands_nascommands_removenasip",
-      "target": "utils_embeds_error_embed",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "cogs/nas_commands.py",
-      "source_location": "L185",
+      "source_location": "L207",
       "weight": 1.0
     },
     {
@@ -2715,7 +2715,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L201",
+      "source_location": "L219",
+      "weight": 1.0
+    },
+    {
+      "source": "cogs_nas_commands_nascommands_removenasip",
+      "target": "utils_embeds_error_embed",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "cogs/nas_commands.py",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -2727,7 +2739,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L344",
+      "source_location": "L424",
       "weight": 1.0
     },
     {
@@ -2739,7 +2751,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L346",
+      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -2751,7 +2763,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L360",
+      "source_location": "L440",
       "weight": 1.0
     },
     {
@@ -2763,7 +2775,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L372",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
@@ -2775,7 +2787,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L447",
+      "source_location": "L527",
       "weight": 1.0
     },
     {
@@ -3343,6 +3355,30 @@
       "weight": 1.0
     },
     {
+      "source": "utils_autocomplete_user_nas_ip_autocomplete",
+      "target": "utils_autocomplete_nas_ip_autocomplete",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "utils/autocomplete.py",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "utils_autocomplete_user_nas_ip_autocomplete",
+      "target": "database_db_fetch",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "utils/autocomplete.py",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
       "source": "utils_autocomplete_username_autocomplete",
       "target": "database_db_fetch",
       "relation": "calls",
@@ -3555,7 +3591,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L252",
+      "source_location": "L332",
       "weight": 1.0
     },
     {
@@ -3579,7 +3615,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L296",
+      "source_location": "L376",
       "weight": 1.0
     },
     {
@@ -3591,7 +3627,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L380",
+      "source_location": "L460",
       "weight": 1.0
     },
     {
@@ -3603,7 +3639,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L204",
+      "source_location": "L269",
       "weight": 1.0
     },
     {
@@ -3639,7 +3675,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L151",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -3651,7 +3687,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L334",
+      "source_location": "L414",
       "weight": 1.0
     },
     {
@@ -4293,6 +4329,18 @@
     {
       "source": "cogs_nas_commands",
       "target": "utils_autocomplete_nasname_autocomplete",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "cogs/nas_commands.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "cogs_nas_commands",
+      "target": "utils_autocomplete_user_nas_ip_autocomplete",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -5275,6 +5323,18 @@
       "weight": 1.0
     },
     {
+      "source": "utils_autocomplete_user_nas_ip_autocomplete",
+      "target": "utils_autocomplete_py_applicationcommandinteraction",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "utils/autocomplete.py",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
       "source": "utils_autocomplete_username_autocomplete",
       "target": "utils_autocomplete_py_applicationcommandinteraction",
       "relation": "references",
@@ -5439,7 +5499,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L446",
+      "source_location": "L526",
       "weight": 1.0
     },
     {
@@ -5792,6 +5852,17 @@
       "confidence_score": 1.0,
       "source_file": "utils/autocomplete.py",
       "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "utils_autocomplete",
+      "target": "utils_autocomplete_user_nas_ip_autocomplete",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "utils/autocomplete.py",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -6286,7 +6357,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L155",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -6302,28 +6373,6 @@
     },
     {
       "source": "cogs_nas_commands_nascommands",
-      "target": "cogs_nas_commands_nascommands_listnasip",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "cogs/nas_commands.py",
-      "source_location": "L208",
-      "weight": 1.0
-    },
-    {
-      "source": "cogs_nas_commands_nascommands",
-      "target": "cogs_nas_commands_nascommands_addnas",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "cogs/nas_commands.py",
-      "source_location": "L256",
-      "weight": 1.0
-    },
-    {
-      "source": "cogs_nas_commands_nascommands",
       "target": "cogs_nas_commands_nascommands_naslist",
       "relation": "method",
       "_origin": "ast",
@@ -6335,13 +6384,35 @@
     },
     {
       "source": "cogs_nas_commands_nascommands",
+      "target": "cogs_nas_commands_nascommands_listnasip",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "cogs/nas_commands.py",
+      "source_location": "L273",
+      "weight": 1.0
+    },
+    {
+      "source": "cogs_nas_commands_nascommands",
+      "target": "cogs_nas_commands_nascommands_addnas",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "cogs/nas_commands.py",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "cogs_nas_commands_nascommands",
       "target": "cogs_nas_commands_nascommands_delnas",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L300",
+      "source_location": "L380",
       "weight": 1.0
     },
     {
@@ -6352,7 +6423,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L338",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
@@ -6363,7 +6434,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L384",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -6539,7 +6610,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "cogs/nas_commands.py",
-      "source_location": "L131",
+      "source_location": "L169",
       "weight": 0.8
     },
     {
@@ -6599,5 +6670,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "de42d39567bfecc014d7319f21ddf21ee989edad"
+  "built_at_commit": "53c4d0d793aeb15a90308ede47c3c58650aec1d2"
 }

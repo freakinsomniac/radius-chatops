@@ -1,16 +1,4 @@
 {
-  ".opencode/opencode.json": {
-    "mtime": 1790853398.8770287,
-    "seen": 1791969823.452746,
-    "ast_hash": "abcc8b9dcd80bca5f9dde6d9f0c3ae79",
-    "semantic_hash": ""
-  },
-  ".opencode/plugins/graphify.js": {
-    "mtime": 1790853398.876912,
-    "seen": 1791969823.4527504,
-    "ast_hash": "3ea725724bc8ebe483c9f13d6aa1124f",
-    "semantic_hash": ""
-  },
   ".vscode/settings.json": {
     "mtime": 1784702503.8287246,
     "seen": 1791969823.452752,
@@ -108,9 +96,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1779376252.1873791,
-    "seen": 1791969823.4527662,
-    "ast_hash": "4745a4144425a6081cfb7d76dd778c18",
+    "mtime": 1791970157.2778778,
+    "seen": 1791970166.9806786,
+    "ast_hash": "3557b35ce64dbb6765259738f69ef056",
     "semantic_hash": ""
   },
   "requirements.txt": {

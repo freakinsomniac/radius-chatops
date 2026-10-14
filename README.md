@@ -75,9 +75,9 @@ Bot terbagi ke dalam modular Cogs yang rapi dan terorganisir:
 | `/editnas` | `nasip`, `[nas_secret]`, `[nas_type]`, `[nas_shortname]`, `[description]` | Mengubah data konfigurasi router/NAS yang sudah terdaftar. |
 | `/delnas` | `nasip` | Menghapus router/NAS dari tabel `nas`. |
 | `/nasusers` | `nasip`, `[limit]` | Melihat daftar user yang sedang aktif terhubung pada router NAS tertentu berdasarkan data akuntansi (`radacct`). |
-| `/addnasip` | `username`, `nas_ip` | Mengizinkan user tertentu untuk login ke router NAS spesifik (disimpan di `radcheck` sebagai `NAS-IP-Address`). |
-| `/removenasip` | `username`, `nas_ip` | Menghapus izin router NAS spesifik dari user individual. |
-| `/listnasip` | `username` | Menampilkan seluruh router NAS yang diizinkan untuk user individual. |
+| `/addnasip` | `username`, `nas_ip` | Menambahkan restriction router NAS ke user (membatasi user agar hanya bisa login melalui router NAS tersebut di `radcheck`). |
+| `/removenasip` | `username`, `nas_ip` | Menghapus restriction router NAS dari user (mencabut batasan; jika semua restriction dicabut, user bebas login di semua NAS). |
+| `/listnasip` | `username` | Menampilkan status restriction router NAS user (daftar router tempat user dibatasi, atau status bebas/unrestricted). |
 
 ---
 

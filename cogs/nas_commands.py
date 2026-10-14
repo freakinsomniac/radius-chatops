@@ -4,7 +4,7 @@ import disnake
 from disnake.ext import commands
 from database.db import fetch, execute
 from utils.embeds import success_embed, error_embed, info_embed, warning_embed
-from utils.autocomplete import username_autocomplete, nas_ip_autocomplete, nasname_autocomplete
+from utils.autocomplete import username_autocomplete, nas_ip_autocomplete, nasname_autocomplete, user_nas_ip_autocomplete
 from utils.exceptions import UserNotFound, DatabaseError
 
 logger = logging.getLogger(__name__)
@@ -70,13 +70,13 @@ class NasCommands(commands.Cog):
 
     @commands.slash_command(
         name="addnasip",
-        description="Tambah NAS IP Address restriction untuk user"
+        description="Batasi akses user agar hanya bisa login ke router NAS tertentu (tambah restriction)"
     )
     async def addnasip(
         self,
         inter,
-        username: str = commands.Param(autocomplete=username_autocomplete),
-        nas_ip: str = commands.Param(name="nas_ip", autocomplete=nas_ip_autocomplete, description="Pilih NAS dari autocomplete atau ketik IP langsung")
+        username: str = commands.Param(autocomplete=username_autocomplete, description="Username yang ingin dibatasi"),
+        nas_ip: str = commands.Param(name="nas_ip", autocomplete=nas_ip_autocomplete, description="Pilih router NAS untuk restriction atau ketik IP langsung")
     ):
         await inter.response.defer()
         username = username.strip()
@@ -112,7 +112,7 @@ class NasCommands(commands.Cog):
                 (username, "NAS-IP-Address", ip_address)
             )
             if existing:
-                embed = warning_embed("⚠️ Sudah Ada", f"User `{username}` sudah memiliki akses ke NAS `{ip_address}`")
+                embed = warning_embed("⚠️ Restriction Sudah Ada", f"User `{username}` sudah memiliki restriction untuk NAS `{ip_address}`.")
                 await inter.followup.send(embed=embed)
                 return
 
@@ -120,43 +120,71 @@ class NasCommands(commands.Cog):
                 "INSERT INTO radcheck (username, attribute, op, value) VALUES (%s, %s, %s, %s)",
                 (username, "NAS-IP-Address", "==", ip_address)
             )
-            logger.info(f"NAS IP '{ip_address}' ditambahkan untuk user '{username}'")
+            logger.info(f"NAS IP restriction '{ip_address}' ditambahkan untuk user '{username}'")
+            
+            all_nas_rows = await fetch(
+                "SELECT value FROM radcheck WHERE username=%s AND attribute=%s ORDER BY value",
+                (username, "NAS-IP-Address")
+            )
+            
+            nas_map = {}
+            try:
+                nas_rows = await fetch("SELECT nasname, shortname FROM nas WHERE nasname IS NOT NULL")
+                for nr in nas_rows:
+                    nn = nr.get('nasname', '')
+                    sn = nr.get('shortname', '')
+                    if nn:
+                        nas_map[nn] = sn or nn
+            except Exception:
+                pass
+                
+            restricted_list = []
+            for r in all_nas_rows:
+                val_ip = r['value']
+                sname = nas_map.get(val_ip)
+                if sname:
+                    restricted_list.append(f"• `{val_ip}` - **{sname}**")
+                else:
+                    restricted_list.append(f"• `{val_ip}`")
+
+            nas_display = f"`{ip_address}` - **{nas_map.get(ip_address)}**" if nas_map.get(ip_address) else f"`{ip_address}`"
+
+            fields = [
+                ("Username", f"`{username}`", True),
+                ("Restriction Baru", nas_display, True),
+                ("Router yang Diizinkan", "\n".join(restricted_list), False)
+            ]
+            embed = success_embed(
+                "🔒 Restriction NAS Berhasil Ditambahkan",
+                f"User `{username}` sekarang dibatasi dan **hanya dapat login** melalui router NAS yang terdaftar di bawah.",
+                fields=fields
+            )
+            await inter.followup.send(embed=embed)
             
         except UserNotFound as e:
             logger.warning(f"User not found: {username}")
             embed = error_embed("❌ User Tidak Ditemukan", str(e))
             await inter.followup.send(embed=embed)
-            return
             
         except DatabaseError as e:
             logger.error(f"Database error saat addnasip: {e}")
-            embed = error_embed("❌ Gagal Menambah NAS IP", "Terjadi kesalahan pada database")
+            embed = error_embed("❌ Gagal Menambah Restriction NAS", "Terjadi kesalahan pada database")
             await inter.followup.send(embed=embed)
-            return
             
         except Exception as e:
             logger.exception(f"Unexpected error saat addnasip: {e}")
             embed = error_embed("❌ Error", "Terjadi error yang tidak terduga")
             await inter.followup.send(embed=embed)
-            return
-
-        fields = [
-            ("Username", f"`{username}`", True),
-            ("NAS IP", f"`{ip_address}`", True),
-            ("Operator", "`==`", True)
-        ]
-        embed = success_embed("✅ NAS IP Berhasil Ditambahkan", fields=fields)
-        await inter.followup.send(embed=embed)
 
     @commands.slash_command(
         name="removenasip",
-        description="Hapus NAS IP Address restriction dari user"
+        description="Hapus restriction router NAS dari user (menghilangkan batasan akses)"
     )
     async def removenasip(
         self,
         inter,
-        username: str = commands.Param(autocomplete=username_autocomplete),
-        nas_ip: str = commands.Param(name="nas_ip", autocomplete=nas_ip_autocomplete, description="Pilih NAS dari autocomplete atau ketik IP langsung")
+        username: str = commands.Param(autocomplete=username_autocomplete, description="Username yang ingin dicabut restriction-nya"),
+        nas_ip: str = commands.Param(name="nas_ip", autocomplete=user_nas_ip_autocomplete, description="Pilih router NAS yang ingin dihapus dari restriction")
     ):
         await inter.response.defer()
         username = username.strip()
@@ -172,55 +200,104 @@ class NasCommands(commands.Cog):
                 (username, "NAS-IP-Address", ip_address)
             )
             if not existing:
-                raise UserNotFound(f"User `{username}` tidak memiliki akses ke NAS `{ip_address}`")
+                embed = warning_embed("⚠️ Restriction Tidak Ditemukan", f"User `{username}` tidak memiliki restriction untuk NAS `{ip_address}`.")
+                await inter.followup.send(embed=embed)
+                return
 
             await execute(
                 "DELETE FROM radcheck WHERE username=%s AND attribute=%s AND value=%s",
                 (username, "NAS-IP-Address", ip_address)
             )
-            logger.info(f"NAS IP '{ip_address}' dihapus untuk user '{username}'")
+            logger.info(f"NAS IP restriction '{ip_address}' dihapus untuk user '{username}'")
             
-        except UserNotFound as e:
-            logger.warning(f"NAS IP not found for user: {username}")
-            embed = error_embed("❌ Tidak Ditemukan", str(e))
+            remaining_rows = await fetch(
+                "SELECT value FROM radcheck WHERE username=%s AND attribute=%s ORDER BY value",
+                (username, "NAS-IP-Address")
+            )
+            
+            if not remaining_rows:
+                embed = success_embed(
+                    "🌐 Restriction NAS Berhasil Dihapus",
+                    f"Batasan ke NAS `{ip_address}` telah dicabut.\n\n"
+                    f"Semua pembatasan NAS untuk user `{username}` telah dihapus. "
+                    f"User sekarang **bebas login di semua router NAS (unrestricted)**."
+                )
+            else:
+                nas_map = {}
+                try:
+                    nas_rows = await fetch("SELECT nasname, shortname FROM nas WHERE nasname IS NOT NULL")
+                    for nr in nas_rows:
+                        nn = nr.get('nasname', '')
+                        sn = nr.get('shortname', '')
+                        if nn:
+                            nas_map[nn] = sn or nn
+                except Exception:
+                    pass
+                    
+                remaining_list = []
+                for r in remaining_rows:
+                    val_ip = r['value']
+                    sname = nas_map.get(val_ip)
+                    if sname:
+                        remaining_list.append(f"• `{val_ip}` - **{sname}**")
+                    else:
+                        remaining_list.append(f"• `{val_ip}`")
+
+                fields = [
+                    ("Username", f"`{username}`", True),
+                    ("Restriction Dicabut", f"`{ip_address}`", True),
+                    ("Sisa Router yang Dibatasi", "\n".join(remaining_list), False)
+                ]
+                embed = success_embed(
+                    "✅ Restriction NAS Berhasil Dihapus",
+                    f"Batasan akses ke router `{ip_address}` telah dicabut dari user `{username}`.",
+                    fields=fields
+                )
+                
             await inter.followup.send(embed=embed)
-            return
             
         except DatabaseError as e:
             logger.error(f"Database error saat removenasip: {e}")
-            embed = error_embed("❌ Gagal Menghapus NAS IP", "Terjadi kesalahan pada database")
+            embed = error_embed("❌ Gagal Menghapus Restriction NAS", "Terjadi kesalahan pada database")
             await inter.followup.send(embed=embed)
-            return
             
         except Exception as e:
             logger.exception(f"Unexpected error saat removenasip: {e}")
             embed = error_embed("❌ Error", "Terjadi error yang tidak terduga")
             await inter.followup.send(embed=embed)
-            return
-
-        embed = success_embed("✅ NAS IP Berhasil Dihapus", f"User `{username}` tidak lagi memiliki akses ke NAS `{ip_address}`.")
-        await inter.followup.send(embed=embed)
 
     @commands.slash_command(
         name="listnasip",
-        description="Lihat semua NAS IP yang bisa diakses user"
+        description="Lihat router NAS mana saja tempat user dibatasi (restricted)"
     )
-    async def listnasip(self, inter, username: str = commands.Param(autocomplete=username_autocomplete)):
+    async def listnasip(self, inter, username: str = commands.Param(autocomplete=username_autocomplete, description="Username yang ingin dicek")):
         await inter.response.defer()
         username = username.strip()
 
         try:
+            user_exists = await fetch("SELECT 1 FROM radcheck WHERE username=%s LIMIT 1", (username,))
+            if not user_exists:
+                raise UserNotFound(f"User `{username}` tidak ada di database")
+
             rows = await fetch(
                 "SELECT value FROM radcheck WHERE username=%s AND attribute=%s ORDER BY value",
                 (username, "NAS-IP-Address")
             )
+        except UserNotFound as e:
+            embed = error_embed("❌ User Tidak Ditemukan", str(e))
+            await inter.followup.send(embed=embed)
+            return
         except Exception as e:
-            embed = error_embed("❌ Error", f"Gagal mengambil NAS IP: {e}")
+            embed = error_embed("❌ Error", f"Gagal mengambil data NAS IP: {e}")
             await inter.followup.send(embed=embed)
             return
 
         if not rows:
-            embed = warning_embed("⚠️ Tidak Ada Restriction", f"User `{username}` tidak memiliki NAS IP restriction (akses ke semua NAS).")
+            embed = info_embed(
+                "🌐 Bebas / Tidak Dibatasi (Unrestricted)",
+                f"User `{username}` **tidak memiliki restriction** NAS IP.\n"
+                f"User ini bebas melakukan login melalui router NAS mana saja."
+            )
             await inter.followup.send(embed=embed)
             return
 
@@ -245,7 +322,10 @@ class NasCommands(commands.Cog):
                 result_lines.append(f"• `{ip}`")
 
         result = "\n".join(result_lines)
-        embed = info_embed(f"🖥️ NAS IP Access: {username}", result)
+        embed = info_embed(
+            f"🔒 Status Restriction NAS: {username}",
+            f"User ini **dibatasi (restricted)** dan hanya dapat melakukan login melalui router NAS berikut:\n\n{result}"
+        )
         await inter.followup.send(embed=embed)
 
 

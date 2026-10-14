@@ -156,3 +156,41 @@ async def group_nas_ip_autocomplete(inter: disnake.ApplicationCommandInteraction
         return result
     except Exception:
         return []
+
+
+async def user_nas_ip_autocomplete(inter: disnake.ApplicationCommandInteraction, user_input: str):
+    username = inter.filled_options.get('username')
+    if not username:
+        return await nas_ip_autocomplete(inter, user_input)
+    
+    username = username.strip()
+    try:
+        rows = await fetch(
+            "SELECT DISTINCT value FROM radcheck WHERE username=%s AND attribute=%s AND value LIKE %s ORDER BY value LIMIT 25",
+            (username, "NAS-IP-Address", f"%{user_input}%")
+        )
+        if not rows:
+            return []
+        
+        nas_map = {}
+        try:
+            nas_rows = await fetch("SELECT nasname, shortname FROM nas WHERE nasname IS NOT NULL")
+            for nas_row in nas_rows:
+                nasname = nas_row.get('nasname', '')
+                shortname = nas_row.get('shortname', '')
+                if nasname and (nasname.count('.') == 3 or '.' in nasname):
+                    nas_map[nasname] = shortname or nasname
+        except Exception:
+            pass
+        
+        result = []
+        for r in rows:
+            ip = r['value']
+            nas_name = nas_map.get(ip)
+            if nas_name:
+                result.append(f"{ip} - {nas_name}")
+            else:
+                result.append(ip)
+        return result
+    except Exception:
+        return []
