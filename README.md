@@ -1,301 +1,262 @@
-# Radius Discord Bot
+# Radius Discord Bot (Radius-ChatOps)
 
-Bot Discord untuk membantu pengelolaan user FreeRADIUS lewat slash command. Bot ini terhubung ke MariaDB dan membaca tabel-tabel standar FreeRADIUS/daloRADIUS untuk menambah, menghapus, dan memantau user.
+Bot Discord ChatOps untuk mempermudah administrasi dan operasional server **FreeRADIUS** dan **daloRADIUS** secara real-time langsung melalui Discord slash commands (`/`).
 
-Dilengkapi dengan **autocomplete**, **color-coded responses**, dan **user-friendly interface** untuk pengalaman yang lebih baik.
+Bot ini dibangun secara asynchronous menggunakan **Python**, library **disnake**, dan koneksi pool **aiomysql** ke database MariaDB/MySQL RADIUS. Dilengkapi dengan **autocomplete dinamis**, **color-coded embeds**, validasi data terstruktur, serta error handling yang aman.
 
-## Gambaran Umum
+---
 
-Alur kerja proyek ini sederhana:
+## 📐 Arsitektur Sistem
 
 ```text
-User Discord
-    │
-    ▼
-Bot Discord (Python)
-    │
-    ▼
-MariaDB / radius
-    │
-    ▼
-FreeRADIUS dan daloRADIUS
+               ┌───────────────────────────────┐
+               │    Administrator / Operator   │
+               └──────────────┬────────────────┘
+                              │ Slash Command (/)
+                              ▼
+               ┌───────────────────────────────┐
+               │    Discord Gateway / Bot      │
+               │        (disnake async)        │
+               └──────────────┬────────────────┘
+                              │ Asynchronous Connection Pool
+                              ▼
+               ┌───────────────────────────────┐
+               │   MariaDB / MySQL Database    │
+               │           (radius)            │
+               └──────┬─────────────────┬──────┘
+                      │                 │
+                      ▼                 ▼
+          ┌──────────────────────┐  ┌───────────────────────┐
+          │  FreeRADIUS Daemon   │  │   daloRADIUS Web UI   │
+          │ (Auth / Accounting)  │  │  (Management Portal)  │
+          └──────────────────────┘  └───────────────────────┘
 ```
 
-## Fitur
+---
 
-### User Management
+## 🚀 Fitur & Daftar Slash Command
 
-- `/ping` - Cek bot aktif atau tidak
-- `/users` - Lihat daftar semua user (dengan pagination)
-- `/adduser` - Tambah user baru (dengan autocomplete group)
-- `/deluser` - Hapus user (dengan autocomplete username)
-- `/changepass` - Ubah password user (dengan autocomplete username)
-- `/setprofile` - Assign profile/group ke user (dengan autocomplete)
+Bot terbagi ke dalam modular Cogs yang rapi dan terorganisir:
 
-### Monitoring & Analytics
+### 1. 👤 User Management (`cogs/user_commands.py`)
 
-- `/online` - Lihat user yang sedang aktif
-- `/userstats` - Lihat statistik sesi user (sessions, bandwidth, last login)
-- `/lastlogin` - Lihat waktu login terakhir user
-- `/activecount` - Hitung total sesi aktif
+| Command | Parameter | Deskripsi |
+| :--- | :--- | :--- |
+| `/users` | - | Menampilkan daftar seluruh username RADIUS (otomatis dipaginasi per 50 user per embed). |
+| `/adduser` | `username`, `password`, `[group]` | Mendaftarkan user baru (`radcheck`) dengan kata sandi cleartext, dan opsional langsung memasukkan ke profile/group (`radusergroup`). |
+| `/deluser` | `username` | Menghapus user dari database (`radcheck` dan relasi di `radusergroup`). Mendukung autocomplete username. |
+| `/changepass` | `username`, `new_password` | Mengubah password (`Cleartext-Password`) untuk user tertentu. |
 
-## Error Handling & Logging
+---
 
-Bot ini menggunakan sistem error handling yang robust dengan custom exception hierarchy:
+### 2. 👥 Group & Profile Management (`cogs/group_commands.py`)
 
-### Exception Classes
+| Command | Parameter | Deskripsi |
+| :--- | :--- | :--- |
+| `/creategroup` | `groupname`, `[rate_limit]`, `[session_timeout]`, `[simultaneous_use]` | Membuat profil/grup baru dengan atribut standar (misal Mikrotik Rate Limit, Session Timeout). |
+| `/deletegroup` | `groupname` | Menghapus grup sepenuhnya dari database (`radgroupreply`, `radgroupcheck`, dan mapping di `radusergroup`). |
+| `/setprofile` | `username`, `groupname` | Menetapkan atau mengganti profil/grup RADIUS untuk seorang user (`radusergroup`). |
+| `/removeprofile`| `username` | Melepas profil/grup dari seorang user (menjadikan user tanpa grup). |
+| `/groupinfo` | `groupname` | Melihat informasi detail profil grup (daftar reply attributes, check/NAS attributes, dan jumlah user anggota). |
+| `/groupadd` | `groupname`, `attribute`, `op`, `[value]` | Menambahkan atribut reply kustom ke grup di tabel `radgroupreply`. |
+| `/groupremove` | `groupname`, `[attribute]` | Menghapus atribut reply tertentu dari grup, atau menghapus seluruh reply grup jika atribut dikosongkan. |
+| `/groupnasadd` | `groupname`, `nas_ip` | Menambahkan restriksi IP router NAS yang diizinkan untuk seluruh user dalam grup (`radgroupcheck`). |
+| `/groupnasremove` | `groupname`, `nas_ip` | Menghapus restriksi IP router NAS dari grup (`radgroupcheck`). |
 
-- **`RadiusException`** - Base class untuk semua RADIUS-related errors
-- **`DatabaseError`** - Kesalahan operasi database (subclass: `UserNotFound`, `DuplicateUser`, `GroupNotFound`, `NASNotFound`)
-- **`OperationError`** - Kesalahan operasi sistem (subclass: `PoolNotInitialized`)
+---
 
-### Logging Levels
+### 3. 🌐 NAS Device Management (`cogs/nas_commands.py`)
 
-```
-INFO   → Success operations (user created, data retrieved, command executed)
-WARNING → Expected errors (duplicate user, user not found, missing data)
-ERROR  → System failures (database connection, pool errors)
-EXCEPTION → Unexpected errors (dengan full stack trace untuk debugging)
-```
+| Command | Parameter | Deskripsi |
+| :--- | :--- | :--- |
+| `/naslist` | `[limit]` | Menampilkan daftar semua perangkat router / NAS yang terdaftar di tabel `nas`. |
+| `/viewnas` | `nasip` | Melihat detail konfigurasi NAS (IP/Host, shortname, secret, type, description). |
+| `/addnas` | `nas_ip_host`, `nas_secret`, `nas_type`, `nas_shortname`, `[description]` | Menambahkan router/NAS baru ke tabel `nas`. Pilihan tipe: `mikrotik`, `cisco`, `chillispot`, atau `other`. |
+| `/editnas` | `nasip`, `[nas_secret]`, `[nas_type]`, `[nas_shortname]`, `[description]` | Mengubah data konfigurasi router/NAS yang sudah terdaftar. |
+| `/delnas` | `nasip` | Menghapus router/NAS dari tabel `nas`. |
+| `/nasusers` | `nasip`, `[limit]` | Melihat daftar user yang sedang aktif terhubung pada router NAS tertentu berdasarkan data akuntansi (`radacct`). |
+| `/addnasip` | `username`, `nas_ip` | Mengizinkan user tertentu untuk login ke router NAS spesifik (disimpan di `radcheck` sebagai `NAS-IP-Address`). |
+| `/removenasip` | `username`, `nas_ip` | Menghapus izin router NAS spesifik dari user individual. |
+| `/listnasip` | `username` | Menampilkan seluruh router NAS yang diizinkan untuk user individual. |
 
-### Error Response Pattern
+---
 
-Semua command menggunakan konsisten error handling:
+### 4. 📊 Statistics & Accounting (`cogs/stats_commands.py`)
 
-1. Try-catch dengan specific exceptions
-2. Log appropriate level (INFO/WARNING/ERROR/EXCEPTION)
-3. User-friendly embed response (tidak expose technical details)
-4. Structured response dengan color-coded embeds
+| Command | Parameter | Deskripsi |
+| :--- | :--- | :--- |
+| `/userstats` | `username` | Menampilkan statistik sesi user dari `radacct` (total sesi, total download/upload dalam MB, dan waktu login terakhir). |
+| `/lastlogin` | `username` | Menampilkan histori waktu login terakhir user. |
+| `/activecount`| - | Menghitung total sesi yang sedang online/aktif saat ini (`radacct` di mana `acctstoptime IS NULL`). |
 
-Contoh implementasi error handling di `/adduser`:
+---
 
-- ✅ Duplicate user → `DuplicateUser` exception → log WARNING → user-friendly error embed
-- ✅ Database error → `DatabaseError` exception → log ERROR → generic error message
-- ✅ Success → log INFO → green success embed
+### 5. 🔍 Attribute Inspection (`cogs/attribute_commands.py`)
 
-### NAS Management
+| Command | Parameter | Deskripsi |
+| :--- | :--- | :--- |
+| `/checkattributes` | `username` | Memeriksa seluruh atribut yang aktif pada seorang user, menggabungkan atribut personal (`radcheck`) dan atribut turunan grup (`radgroupcheck`), lengkap dengan resolusi nama NAS. |
 
-- `/naslist` - Lihat daftar NAS devices
-- `/nasstatus` - Lihat status aktif per NAS
-- `/nasusers` - Lihat user yang tersambung ke NAS tertentu
+---
 
-### Group Management
+### 6. ⚙️ Bot Administration & Utility (`cogs/admin_commands.py` & `main.py`)
 
-- `/groupadd` - Tambah reply attribute ke group (dengan autocomplete)
-- `/groupremove` - Hapus attribute dari group (dengan autocomplete)
+| Command | Parameter | Deskripsi |
+| :--- | :--- | :--- |
+| `/reload` | `[cog]` | Melakukan hot-reload modul cog tanpa perlu mematikan bot (*Khusus Owner Bot / `OWNER_ID`*). |
+| `/restart` | - | Merestart proses bot secara penuh (*Khusus Owner Bot / `OWNER_ID`*). |
+| `/ping` | - | Menguji respon bot Discord ("Pong! 🏓"). |
 
-## Fitur Unggulan
+---
 
-### 🎨 Color-Coded Responses
+## 🎨 User Experience & Interface
 
-Semua response menggunakan Discord Embeds dengan warna yang berbeda:
+1. **Autocomplete Cerdas**:
+   - `username`: Mengambil saran langsung dari database user aktif.
+   - `groupname`: Mengambil saran nama profil/grup yang tersedia.
+   - `nas_ip`: Menampilkan daftar IP router/NAS lengkap dengan shortname deskriptif.
+   - `attribute` & `operator`: Menampilkan daftar atribut standar FreeRADIUS/Mikrotik (`Mikrotik-Rate-Limit`, `Session-Timeout`, dll) dan operator (`:=`, `==`, `+=`, dll).
+2. **Color-Coded Embeds**:
+   - 🟢 **Hijau (Success)**: Operasi berhasil dieksekusi.
+   - 🔴 **Merah (Error)**: Terjadi kesalahan input atau database.
+   - 🔵 **Biru (Info)**: Informasi query, status, atau statistik.
+   - 🟠 **Oranye (Warning)**: Peringatan, data tidak ditemukan, atau status penting.
 
-- **🟢 Green** - Operasi berhasil (add, delete, update)
-- **🔴 Red** - Ada error atau operasi gagal
-- **🔵 Blue** - Informasi atau query results
-- **🟠 Orange** - Peringatan atau data tidak ditemukan
+---
 
-### 🔍 Autocomplete
+## 🗄️ Tabel Database yang Digunakan
 
-Parameter yang mendukung autocomplete:
+Bot membaca dan memanipulasi skema tabel standar FreeRADIUS / daloRADIUS:
 
-- `username` - Suggestions dari daftar user yang ada
-- `groupname` - Suggestions dari daftar group yang ada
-- `attribute` - Suggestions dari RADIUS attributes umum
-- `operator` - Suggestions dari operator RADIUS
+| Tabel | Deskripsi Penggunaan |
+| :--- | :--- |
+| **`radcheck`** | Menyimpan kredensial autentikasi user (`Cleartext-Password`) dan pembatasan NAS user individual. |
+| **`radusergroup`** | Menyimpan mapping keanggotaan user ke profil/grup. |
+| **`radgroupreply`** | Menyimpan atribut reply profil grup (misal: limit bandwidth Mikrotik, IP pool). |
+| **`radgroupcheck`** | Menyimpan atribut validasi grup (misal: restriksi router NAS grup via regex). |
+| **`radacct`** | Menyimpan log akuntansi sesi, durasi, total byte upload/download, dan status online. |
+| **`nas`** | Menyimpan daftar server / router NAS dan secret key RADIUS-nya. |
 
-### 📊 Better Formatting
+---
 
-- Emoji di setiap response untuk visual clarity
-- Markdown formatting (bold, code blocks)
-- Field-based layout untuk informasi terstruktur
-- Pagination otomatis untuk list yang panjang
+## 🛠️ Persyaratan Sistem
 
-## Teknologi
+- **Python**: 3.10 atau lebih baru (Disarankan Python 3.11+)
+- **Database**: MariaDB 10.x+ atau MySQL 8.x+ dengan skema FreeRADIUS aktif
+- **Discord Bot**: Token bot dari [Discord Developer Portal](https://discord.com/developers/applications)
 
-| Komponen           | Teknologi     |
-| ------------------ | ------------- |
-| Bahasa pemrograman | Python 3.10+  |
-| Library Discord    | disnake       |
-| Driver database    | aiomysql      |
-| Konfigurasi env    | python-dotenv |
-| Database           | MariaDB       |
+---
 
-## Struktur Proyek
+## 📦 Instalasi & Menjalankan
+
+### Cara 1: Menggunakan Virtual Environment (Lokal)
+
+1. **Clone repositori dan masuk ke direktori proyek**:
+   ```bash
+   git clone <repo_url>
+   cd radius-chatops
+   ```
+
+2. **Buat dan aktifkan virtual environment**:
+   * **Linux / macOS**:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+   * **Windows**:
+     ```powershell
+     python -m venv venv
+     venv\Scripts\activate
+     ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Konfigurasi Environment Variables**:
+   Salin `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   Lalu sesuaikan isinya:
+   ```env
+   # Discord Bot Configuration
+   DISCORD_TOKEN=your_bot_token_here
+   GUILD_ID=123456789012345678    # Opsional: Untuk instant sync slash command di server development
+   OWNER_ID=123456789012345678    # Opsional: ID Discord Owner untuk akses /reload dan /restart
+
+   # Database Configuration (MariaDB / MySQL FreeRADIUS)
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_USER=radius_user
+   DB_PASSWORD=secret_password
+   DB_NAME=radius
+   ```
+
+5. **Jalankan Bot**:
+   ```bash
+   python main.py
+   ```
+
+---
+
+### Cara 2: Menggunakan Docker
+
+1. **Build Docker Image**:
+   ```bash
+   docker build -t radius-chatops:latest .
+   ```
+
+2. **Jalankan Container**:
+   ```bash
+   docker run -d \
+     --name radius-bot \
+     --restart unless-stopped \
+     --env-file .env \
+     radius-chatops:latest
+   ```
+
+3. **Melihat Log**:
+   ```bash
+   docker logs -f radius-bot
+   ```
+
+---
+
+## 📁 Struktur Direktori Proyek
 
 ```text
 .
-├── main.py                    # Bot initialization & cog loader
-├── requirements.txt           # Python dependencies
-├── .env.example              # Template environment variables
-├── README.md                 # Dokumentasi ini
-├── database/
-│   └── db.py                # Async database connection & pooling
-├── utils/
-│   ├── __init__.py
-│   ├── embeds.py            # Color-coded embed factory & helpers
-│   ├── autocomplete.py      # Autocomplete functions untuk slash commands
-│   └── exceptions.py        # Custom exception hierarchy
 ├── cogs/
 │   ├── __init__.py
-│   ├── user_commands.py     # User management commands
-│   ├── nas_commands.py      # NAS device management commands
-│   ├── group_commands.py    # Group/profile management commands
-│   ├── stats_commands.py    # Session statistics commands
-│   └── attribute_commands.py # Attribute viewing commands
-└── test_db.py               # Database connection test
+│   ├── admin_commands.py       # Bot lifecycle & hot-reload (/reload, /restart)
+│   ├── attribute_commands.py   # Pemeriksaan atribut user (/checkattributes)
+│   ├── group_commands.py       # Manajemen grup & profil (/creategroup, /groupadd, dll)
+│   ├── nas_commands.py         # Manajemen router & restriksi NAS (/naslist, /addnas, dll)
+│   ├── stats_commands.py       # Statistik akuntansi sesi (/userstats, /activecount, dll)
+│   └── user_commands.py        # Manajemen user dasar (/users, /adduser, /changepass, /deluser)
+├── database/
+│   ├── __init__.py
+│   └── db.py                   # Async connection pool aiomysql (fetch, execute, close)
+├── utils/
+│   ├── __init__.py
+│   ├── autocomplete.py         # Helper autocomplete dinamis untuk slash command
+│   ├── embeds.py               # Template Discord Embed terstandardisasi
+│   └── exceptions.py           # Custom exception handling (UserNotFound, DuplicateUser, dll)
+├── .dockerignore
+├── .env.example                # Template variabel lingkungan
+├── .gitignore
+├── Dockerfile                  # Konfigurasi container Docker berbasis python:3.11-slim
+├── main.py                     # Entry point bot, event handlers, & cog loader
+├── requirements.txt            # Dependensi Python (disnake, aiomysql, python-dotenv, dll)
+└── test_db.py                  # Script uji koneksi database
 ```
 
-## Kebutuhan
+---
 
-- Python 3.10 atau lebih baru
-- MariaDB yang sudah berisi skema FreeRADIUS
-- Discord bot token
-- `GUILD_ID` jika ingin command slash didaftarkan ke server tertentu saat pengembangan
+## 🛡️ Catatan Keamanan
 
-## Instalasi
-
-### 1. Buat virtual environment
-
-Windows:
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-Linux:
-
-```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-### 2. Install dependency
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Siapkan file environment
-
-Salin `.env.example` menjadi `.env`, lalu isi nilainya.
-
-Contoh isi `.env`:
-
-```env
-DISCORD_TOKEN=isi_token_discord_anda
-GUILD_ID=123456789012345678
-
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=radius_bot
-DB_PASSWORD=rahasia
-DB_NAME=radius
-```
-
-## Menjalankan Bot
-
-```bash
-python main.py
-```
-
-## Contoh Penggunaan
-
-### User Management
-
-```
-/adduser username:andi password:123456 group:basic
-/deluser username:andi
-/changepass username:andi new_password:654321
-/setprofile username:andi groupname:premium
-```
-
-### Monitoring
-
-```
-/users
-/online
-/userstats username:andi
-/lastlogin username:andi
-/activecount
-```
-
-### NAS Management
-
-```
-/naslist limit:20
-/nasstatus
-/nasstatus nasip:192.168.1.1
-/nasusers nasip:192.168.1.1 limit:50
-```
-
-### Group Management
-
-```
-/groupadd groupname:basic attribute:Session-Timeout op:= value:3600
-/groupremove groupname:basic attribute:Session-Timeout
-/groupremove groupname:basic
-```
-
-### Tips
-
-- Ketika mengetik parameter, autocomplete akan menampilkan suggestions
-- Semua response ditampilkan dengan warna dan emoji untuk clarity
-- List yang panjang akan di-paginate otomatis
-
-## Tabel Database yang Dipakai
-
-| Tabel           | Fungsi                                          |
-| --------------- | ----------------------------------------------- |
-| `radcheck`      | Menyimpan kredensial user                       |
-| `radacct`       | Menyimpan data accounting dan sesi aktif        |
-| `nas`           | Menyimpan data NAS/router                       |
-| `radusergroup`  | Menyimpan relasi user ke group                  |
-| `radgroupreply` | Menyimpan atribut reply untuk group             |
-| `userinfo`      | Dipakai untuk data profil minimal di daloRADIUS |
-
-## Catatan Keamanan
-
-- Jangan commit file `.env` ke repository
-- Gunakan user MariaDB khusus untuk bot
-- Jangan membuka MariaDB ke publik tanpa kontrol akses yang ketat
-- Jika command hanya untuk server tertentu, isi `GUILD_ID` supaya pendaftaran slash command lebih cepat saat development
-
-## Troubleshooting Singkat
-
-- **Bot tidak muncul online** - Cek `DISCORD_TOKEN` di `.env`
-- **Query database gagal** - Cek `DB_HOST`, `DB_USER`, `DB_PASSWORD`, dan `DB_NAME`
-- **Slash command tidak muncul** - Pastikan `GUILD_ID` diisi dan bot diundang ke server yang benar
-- **Autocomplete tidak bekerja** - Pastikan `utils/autocomplete.py` dan `utils/embeds.py` ada di folder yang benar
-- **Import error** - Jalankan `pip install -r requirements.txt` untuk install semua dependencies
-
-## Changelog
-
-**Error Handling & Code Quality Enhancement**
-
-- ✅ **Custom Exception Hierarchy** - Structured error handling dengan custom exception classes
-  - `RadiusException` (base class)
-  - `DatabaseError` dengan subclass: `UserNotFound`, `DuplicateUser`, `GroupNotFound`, `NASNotFound`
-  - `OperationError` dengan subclass: `PoolNotInitialized`
-- 📝 **Structured Logging** - Logging dengan level yang sesuai:
-  - `INFO` - Success operations (user created, data retrieved)
-  - `WARNING` - Expected errors (duplicate user, user not found)
-  - `ERROR` - System failures (database errors, pool errors)
-  - `EXCEPTION` - Unexpected errors (dengan full stack trace)
-- 🏗️ **Refactored dengan Cogs** - Semua commands terorganisir dalam 5 cog modules:
-  - `cogs/user_commands.py` - User management (/users, /adduser, /deluser, /changepass, /setprofile)
-  - `cogs/nas_commands.py` - NAS management (/naslist, /nasstatus, /addnasip, /removenasip, /listnasip)
-  - `cogs/group_commands.py` - Group management (/setprofile, /groupadd, /groupremove)
-  - `cogs/stats_commands.py` - Statistics (/online, /userstats, /lastlogin, /activecount)
-  - `cogs/attribute_commands.py` - Attribute management (/checkattributes)
-- 🧹 **Clean Code** - Semua comments dan docstrings dihapus untuk appearance yang lebih profesional
-- 🎯 **User-Friendly Error Messages** - Error responses tidak menampilkan technical details, hanya user-friendly messages
-
-**Previous Features**
-
-- ✨ Autocomplete untuk semua parameter relevan
-- 🎨 Color-coded embeds (success, error, info, warning)
-- 📊 Better formatting dengan emoji dan markdown
-- 📄 Refactor ke utils folder untuk helper functions
-- 📝 Complete documentation
+1. **File `.env`**: Jangan pernah mengunggah file `.env` ke Git atau repository publik.
+2. **Kredensial Database**: Buat akun user database khusus dengan hak akses terbatas ke database `radius`.
+3. **Admin Commands**: Perintah `/reload` dan `/restart` dilindungi oleh pemeriksaan `OWNER_ID`. Pastikan `OWNER_ID` diisi dengan ID akun Discord administrator Anda.

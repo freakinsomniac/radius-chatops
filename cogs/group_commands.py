@@ -118,38 +118,6 @@ class GroupCommands(commands.Cog):
             await inter.followup.send(embed=embed)
 
     @commands.slash_command(
-        name="groupcheckremove",
-        description="Remove check attributes from a group or remove entire group checks"
-    )
-    async def groupcheckremove(self, inter, groupname: str = commands.Param(autocomplete=groupname_autocomplete), attribute: str = commands.Param(default=None, autocomplete=attribute_autocomplete)):
-        await inter.response.defer()
-        groupname = groupname.strip()
-        if attribute:
-            attribute = attribute.strip()
-        
-        try:
-            if attribute:
-                await execute("DELETE FROM radgroupcheck WHERE groupname=%s AND attribute=%s", (groupname, attribute))
-                logger.info(f"Check attribute '{attribute}' dihapus dari group '{groupname}'")
-                embed = success_embed("✅ Attribute Berhasil Dihapus", f"Check attribute `{attribute}` dihapus dari group `{groupname}`.")
-            else:
-                await execute("DELETE FROM radgroupcheck WHERE groupname=%s", (groupname,))
-                logger.info(f"Semua check attributes dihapus dari group '{groupname}'")
-                embed = success_embed("✅ Group Check Berhasil Dihapus", f"Semua check untuk group `{groupname}` telah dihapus.")
-                
-            await inter.followup.send(embed=embed)
-            
-        except DatabaseError as e:
-            logger.error(f"Database error saat groupcheckremove: {e}")
-            embed = error_embed("❌ Gagal Menghapus Group Check", "Terjadi kesalahan pada database")
-            await inter.followup.send(embed=embed)
-            
-        except Exception as e:
-            logger.exception(f"Unexpected error saat groupcheckremove: {e}")
-            embed = error_embed("❌ Error", "Terjadi error yang tidak terduga")
-            await inter.followup.send(embed=embed)
-
-    @commands.slash_command(
         name="groupnasadd",
         description="Add a NAS IP restriction to a group (adds individual check row)"
     )
